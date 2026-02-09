@@ -1,0 +1,16 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-dotenv==1.0.1
+pydantic==2.9.2
+crewai[tools,google-genai]==0.80.0
+aiofiles==24.1.0
+litellm
+markdown==3.6
+# PDF Export dependencies (requires GTK+ on Windows - see WINDOWS_SETUP.md)
+# For quick start without PDF: comment out the next 2 lines
+weasyprint==62.3
+pygments==2.18.0
+pytesseract
+pillow
+pypdf 
+easyocr

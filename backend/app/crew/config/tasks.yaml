@@ -1,0 +1,38 @@
+research_task:
+  description: >
+    PRD: {prd}
+    
+    Return JSON:
+    {{"queries": ["q1"], "sources": [{{"id": "S0", "title": "PRD", "url": "internal://prd", "key_facts": ["fact1"]}}], "summary_facts": ["f1"], "unknowns": []}}
+  expected_output: "JSON with sources array having id, title, url, key_facts"
+  agent: researcher
+
+write_task:
+  description: >
+    PRD: {prd}
+    Research: {research_json}
+    Tone: {tone}, Audience: {audience}, Words: {word_count}
+    
+    Write blog in Markdown. Cite facts as [S1], [S2]. If unsure, use [NEEDS CONFIRMATION].
+    {revision_instructions}
+  expected_output: "Markdown blog with [S#] citations"
+  agent: writer
+
+fact_check_task:
+  description: >
+    Draft: {draft}
+    Research: {research_json}
+    
+    Check if claims match sources. Return JSON:
+    {{"passed": true/false, "issues": [{{"claim": "x", "reason": "y", "suggested_fix": "z", "source_ids": []}}], "rewrite_instructions": ""}}
+  expected_output: "JSON with passed boolean and issues array"
+  agent: fact_checker
+
+polish_task:
+  description: >
+    Draft: {draft}
+    Tone: {tone}, Audience: {audience}
+    
+    Improve clarity. Keep [S#] citations. Do NOT add new facts.
+  expected_output: "Polished Markdown with preserved citations"
+  agent: polisher
