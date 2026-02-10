@@ -1,0 +1,40 @@
+[2026-02-09T14:29:21+00:00] Run initialised
+[2026-02-09T14:29:26+00:00] ✓ Web search enabled (SerperDevTool with gemini/gemini-2.5-flash)
+[2026-02-09T14:29:26+00:00] Crew built (PrdBlogCrew with gemini/gemini-2.5-flash)
+[2026-02-09T14:29:26+00:00] ▶ Step 1: Researcher starting
+[2026-02-09T14:29:31+00:00] ✓ Research done – 1 sources found
+[2026-02-09T14:29:31+00:00] ▶ Step 2: Writer iteration 1
+[2026-02-09T14:29:39+00:00] ✓ Draft 1 written (1499 chars)
+[2026-02-09T14:29:39+00:00] ▶ Step 3: Fact-Checker iteration 1
+[2026-02-09T14:29:44+00:00] ✓ Fact-check 1: passed=True, issues=0
+[2026-02-09T14:29:44+00:00] ▶ Step 4: Style Polisher starting
+[2026-02-09T14:29:52+00:00] ✓ Pipeline complete – status=DONE
+[2026-02-09T14:30:07+00:00] ❌ LinkedIn pack generation failed: unexpected indent (linkedin_orchestrator.py, line 222)
+[2026-02-09T14:32:23+00:00] 🚀 Starting LinkedIn Pack generation (Pipeline B)
+[2026-02-09T14:32:23+00:00] ❌ LinkedIn pack generation failed: 'LinkedInClaimsOutput'
+[2026-02-09T14:32:28+00:00] 🚀 Starting LinkedIn Pack generation (Pipeline B)
+[2026-02-09T14:32:28+00:00] ❌ LinkedIn pack generation failed: 'LinkedInClaimsOutput'
+[2026-02-09T14:34:12+00:00] 🚀 Starting LinkedIn Pack generation (Pipeline B)
+[2026-02-09T14:34:12+00:00] Crew built (LinkedInPackCrew with Groq/llama-3.1-8b-instant)
+[2026-02-09T14:34:12+00:00] ▶ Running LinkedIn Pack crew (3 agents, sequential)
+[2026-02-09T14:34:12+00:00]    → Step 1: Claims Agent
+[2026-02-09T14:34:12+00:00]    → Step 2: LinkedIn Post Agent
+[2026-02-09T14:34:12+00:00]    → Step 3: Image Prompt Agent
+[2026-02-09T14:34:19+00:00] ✓ Crew execution complete, extracting results...
+[2026-02-09T14:34:19+00:00] Number of tasks: 3
+[2026-02-09T14:34:19+00:00] ✓ Claims check: 9 safe, 6 risky (MEDIUM_RISK)
+[2026-02-09T14:34:19+00:00] 💼 LinkedIn pack updated: claims_check
+[2026-02-09T14:34:19+00:00] ✓ Parsing LinkedIn post output...
+[2026-02-09T14:34:19+00:00] ✓ LinkedIn post parsed from pydantic (196 words)
+[2026-02-09T14:34:19+00:00] ✓ LinkedIn post parsed successfully with 940 chars
+[2026-02-09T14:34:19+00:00] ✓ LinkedIn post created (196 words, 8 hashtags)
+[2026-02-09T14:34:19+00:00] 💼 LinkedIn pack updated: linkedin_post
+[2026-02-09T14:34:19+00:00] ✓ Parsing image prompt output...
+[2026-02-09T14:34:19+00:00] ✓ Image prompt generated for SDXL-Lightning
+[2026-02-09T14:34:19+00:00] 💼 LinkedIn pack updated: image_prompt
+[2026-02-09T14:34:19+00:00] ✅ LinkedIn Pack generation complete!
+[2026-02-09T14:34:19+00:00]    → Claims: MEDIUM_RISK
+[2026-02-09T14:34:19+00:00]    → Post: 196 words
+[2026-02-09T14:34:19+00:00]    → Image prompt ready for SDXL-Lightning
+[2026-02-09T14:35:02+00:00] ❌ PDF export error: cannot load library 'libgobject-2.0-0': error 0x7e.  Additionally, ctypes.util.find_library() did not manage to locate a library called 'libgobject-2.0-0'
+[2026-02-09T14:47:46+00:00] ❌ PDF export error: module 'aspose.html.saving' has no attribute 'PageSize'

@@ -1,4 +1,4 @@
-import type { CreateRunRequest, RunState } from "./types";
+import type { CreateRunRequest, RunState, LinkedInPack, GeneratedImage } from "./types";
 
 const API_BASE = "/api/backend";
 
@@ -34,6 +34,14 @@ export async function submitFeedback(runId: string, stage: string, feedback: str
     method: "POST",
     body: JSON.stringify({ stage, feedback }),
   });
+}
+
+export async function generateLinkedInPack(runId: string): Promise<LinkedInPack> {
+  return apiFetch(`/runs/${runId}/linkedin-pack`, { method: "POST" });
+}
+
+export async function generateImage(runId: string): Promise<GeneratedImage> {
+  return apiFetch(`/runs/${runId}/generate-image`, { method: "POST" });
 }
 
 export async function downloadPdf(runId: string): Promise<Blob> {

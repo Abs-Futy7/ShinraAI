@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { UploadCloud, FileType, X, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FileUploadProps {
   onTextExtracted: (text: string, filename: string) => void;
@@ -17,7 +19,6 @@ export default function FileUpload({ onTextExtracted }: FileUploadProps) {
   const handleFileUpload = async (file: File) => {
     if (!file) return;
 
-    // Check file type
     const validExtensions = [".pdf", ".txt", ".md", ".markdown", ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".tif"];
     const fileExtension = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
     
@@ -26,7 +27,6 @@ export default function FileUpload({ onTextExtracted }: FileUploadProps) {
       return;
     }
 
-    // Check file size (10MB)
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       setError("File is too large. Maximum size is 10MB.");
@@ -62,7 +62,6 @@ export default function FileUpload({ onTextExtracted }: FileUploadProps) {
       setError(err.message || "Failed to upload file");
     } finally {
       setUploading(false);
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -102,21 +101,19 @@ export default function FileUpload({ onTextExtracted }: FileUploadProps) {
   };
 
   return (
-    <div className="space-y-3">
-      {/* Drag & Drop Zone */}
+    <div className="space-y-4">
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`
-          border-2 border-dashed rounded-lg p-6 text-center transition-all
-          ${dragActive 
-            ? "border-brand-500 bg-brand-50" 
-            : "border-gray-300 hover:border-brand-400 bg-gray-50 hover:bg-gray-100"
-          }
-          ${uploading ? "opacity-50 pointer-events-none" : "cursor-pointer"}
-        `}
         onClick={handleButtonClick}
+        className={cn(
+          "relative group border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer overflow-hidden",
+          dragActive 
+            ? "border-primary-500 bg-primary-50/50 scale-[1.01]" 
+            : "border-sage-200 hover:border-primary-300 bg-paper hover:bg-white",
+          uploading && "opacity-70 pointer-events-none"
+        )}
       >
         <input
           ref={fileInputRef}
@@ -126,46 +123,46 @@ export default function FileUpload({ onTextExtracted }: FileUploadProps) {
           className="hidden"
         />
         
-        <div className="flex flex-col items-center gap-3">
-          <div className="text-4xl">
-            {uploading ? "⏳" : "📄"}
+        <div className="flex flex-col items-center gap-4 relative z-10">
+          <div className={cn(
+            "p-4 rounded-full transition-colors duration-300",
+            dragActive ? "bg-primary-100 text-primary-600" : "bg-sage-100/50 text-sage-400 group-hover:text-primary-500 group-hover:bg-primary-50"
+          )}>
+            {uploading ? (
+              <Loader2 className="animate-spin" size={32} />
+            ) : (
+              <UploadCloud size={32} />
+            )}
           </div>
           
-          <div>
-            <p className="text-sm font-medium text-gray-700">
-              {uploading ? "Uploading..." : "Drop your file here or click to browse"}
+          <div className="space-y-1">
+            <p className="text-base font-serif font-medium text-primary-900">
+              {uploading ? "Extracting content..." : "Click or drop file to upload"}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Supports PDF, TXT, Markdown, and Images (PNG, JPG, BMP, TIFF) • Max 10MB
+            <p className="text-xs font-sans text-gray-400">
+              PDF, Markdown, TXT, Images (OCR) • Max 10MB
             </p>
           </div>
           
           {!uploading && (
-            <button
-              type="button"
-              className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
-              onClick={handleButtonClick}
-            >
-              Choose File
-            </button>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-sage-200 text-xs font-medium text-primary-700 shadow-sm group-hover:border-primary-200 group-hover:shadow-md transition-all">
+              <FileType size={14} /> Browse Files
+            </span>
           )}
         </div>
       </div>
 
-      {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-          <p className="text-sm text-red-600 flex items-center gap-2">
-            <span>⚠️</span>
-            <span>{error}</span>
-          </p>
+        <div className="bg-red-50 border border-red-100 rounded-lg p-4 flex items-start gap-3 animate-fade-in">
+          <AlertCircle className="text-red-500 mt-0.5" size={18} />
+          <p className="text-sm text-red-700">{error}</p>
         </div>
       )}
 
-      {/* Success Message */}
       {!error && !uploading && (
-        <div className="text-xs text-gray-500 text-center">
-          💡 Upload a PRD file to automatically fill the text area below
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+           <CheckCircle2 size={12} />
+           <span>Secure processing enabled</span>
         </div>
       )}
     </div>

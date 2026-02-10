@@ -14,6 +14,13 @@ CONFIG_DIR = Path(__file__).resolve().parent / "config"
 DEFAULT_GROQ_MODEL = "groq/llama-3.1-8b-instant"  # Fastest for free tier
 DEFAULT_GEMINI_MODEL = "gemini/gemini-2.5-flash"  # Free tier with tools support
 
+# Groq model fallback chain for rate limiting
+GROQ_MODEL_FALLBACKS = [
+    "groq/llama-3.1-8b-instant",
+    "groq/llama-3.3-70b-versatile", 
+    "groq/mixtral-8x7b-32768"
+]
+
 
 def _load_yaml(name: str) -> dict:
     with open(CONFIG_DIR / name, "r", encoding="utf-8") as f:
@@ -82,9 +89,17 @@ def _get_llm(temperature: float = 0.5, model_override: str | None = None) -> LLM
 
 
 def _get_llm_with_fallback(temperature: float = 0.5, retry_index: int = 0, model_override: str | None = None) -> LLM:
-    """Get LLM (no fallback needed for stable free tier models)."""
-    # For free tier, we use stable models without fallback complexity
-    # Just return the configured LLM
+    """Get LLM with fallback support for rate limiting."""
+    # If model_override is provided, use it directly
+    if model_override:
+        return _get_llm(temperature, model_override)
+    
+    # Otherwise, use fallback chain for Groq models
+    if retry_index < len(GROQ_MODEL_FALLBACKS):
+        fallback_model = GROQ_MODEL_FALLBACKS[retry_index]
+        return _get_llm(temperature, fallback_model)
+    
+    # If exhausted fallbacks, use default
     return _get_llm(temperature, model_override)
 
 

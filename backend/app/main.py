@@ -186,6 +186,112 @@ async def submit_feedback(run_id: str, req: SubmitFeedbackRequest):
         raise HTTPException(500, detail=str(exc))
 
 
+@app.post("/runs/{run_id}/linkedin-pack")
+async def generate_linkedin_pack(run_id: str):
+    """
+    Generate LinkedIn Pack (Pipeline B) - Optional post-blog content generation.
+    
+    Requires Pipeline A to be complete (status: DONE or DONE_WITH_WARNINGS).
+    
+    Returns:
+    - claims_check: Safe vs risky claims analysis
+    - linkedin_post: Platform-optimized post with hashtags and CTA
+    - image_prompt: SDXL-optimized prompt for image generation (HF integration later)
+    """
+    state = store.load(run_id)
+    if state is None:
+        raise HTTPException(404, "Run not found")
+    
+    # Check Pipeline A is complete
+    status = state.get("status")
+    if status not in ("DONE", "DONE_WITH_WARNINGS"):
+        raise HTTPException(
+            400, 
+            f"Pipeline A must be complete before generating LinkedIn pack. Current status: {status}"
+        )
+    
+    # Check if linkedin_pack already exists
+    if state.get("linkedin_pack"):
+        return state["linkedin_pack"]
+    
+    try:
+        from app.services.linkedin_orchestrator import run_linkedin_pipeline
+        
+        result = await run_linkedin_pipeline(run_id, state, store)
+        
+        # Return the generated linkedin_pack
+        updated_state = store.load(run_id)
+        return updated_state.get("linkedin_pack", result)
+    except Exception as exc:
+        error_msg = f"LinkedIn pack generation failed: {str(exc)}"
+        store.log(run_id, f"❌ {error_msg}")
+        raise HTTPException(500, detail=error_msg)
+
+
+@app.post("/runs/{run_id}/generate-image")
+async def generate_linkedin_image(run_id: str):
+    """
+    Generate image using Leonardo AI based on the image prompt from LinkedIn Pack.
+    
+    Requires LinkedIn Pack to be generated first.
+    
+    Returns:
+    - generation_id: Leonardo generation ID
+    - images: List of generated image URLs
+    - status: success or failed
+    """
+    state = store.load(run_id)
+    if state is None:
+        raise HTTPException(404, "Run not found")
+    
+    # Check if linkedin_pack exists
+    linkedin_pack = state.get("linkedin_pack")
+    if not linkedin_pack:
+        raise HTTPException(400, "LinkedIn pack must be generated first")
+    
+    # Check if image already generated
+    if linkedin_pack.get("generated_image"):
+        return linkedin_pack["generated_image"]
+    
+    try:
+        from app.services.leonardo_service import LeonardoService
+        
+        image_prompt_data = linkedin_pack.get("image_prompt", {})
+        prompt = image_prompt_data.get("prompt", "")
+        negative_prompt = image_prompt_data.get("negative_prompt", "")
+        
+        if not prompt:
+            raise HTTPException(400, "No image prompt found in LinkedIn pack")
+        
+        store.log(run_id, f"🎨 Generating image with Leonardo AI...")
+        store.log(run_id, f"Prompt: {prompt[:100]}...")
+        
+        # Initialize Leonardo service
+        leonardo = LeonardoService()
+        
+        # Generate image
+        result = await leonardo.generate_image(
+            prompt=prompt,
+            negative_prompt=negative_prompt,
+            width=1024,
+            height=768,
+            guidance_scale=7
+        )
+        
+        store.log(run_id, f"✓ Image generated: {len(result['images'])} image(s)")
+        
+        # Store image result in linkedin_pack
+        linkedin_pack["generated_image"] = result
+        store.update_linkedin_pack(run_id, "generated_image", result)
+        
+        return result
+        
+    except Exception as exc:
+        error_msg = f"Image generation failed: {str(exc)}"
+        store.log(run_id, f"❌ {error_msg}")
+        raise HTTPException(500, detail=error_msg)
+
+
 @app.get("/runs/{run_id}")
 async def get_run(run_id: str):
     state = store.load(run_id)

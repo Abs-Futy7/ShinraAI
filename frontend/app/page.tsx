@@ -2,9 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createRun, executeRun } from "@/lib/api";
+import { createRun } from "@/lib/api";
 import TemplateLibrary from "@/components/TemplateLibrary";
 import FileUpload from "@/components/FileUpload";
+import Features from "@/components/Features";
+import HowItWorks from "@/components/HowItWorks";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Sparkles, Search, Type, Users, FileText, Settings2, Globe, CheckCircle2, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const TONES = ["professional", "friendly", "playful", "academic", "casual"];
 
@@ -47,7 +52,6 @@ export default function Home() {
   const handleProviderChange = (provider: "groq" | "gemini") => {
     setModelProvider(provider);
     setModelName(MODEL_PROVIDERS[provider].models[0].id);
-    // Disable web search if switching to Groq
     if (provider === "groq") {
       setUseWebSearch(false);
     }
@@ -57,7 +61,6 @@ export default function Home() {
     setPrd(content);
     setShowTemplates(false);
     setUploadedFilename(null);
-    // Scroll to PRD textarea
     setTimeout(() => {
       document.querySelector('textarea')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
@@ -67,7 +70,6 @@ export default function Home() {
     setPrd(text);
     setUploadedFilename(filename);
     setShowUpload(false);
-    // Scroll to PRD textarea
     setTimeout(() => {
       document.querySelector('textarea')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
@@ -90,7 +92,6 @@ export default function Home() {
         model_provider: modelProvider,
         model_name: modelName,
       });
-      // Navigate immediately, execute from the run page
       router.push(`/runs/${run_id}`);
     } catch (e: any) {
       setError(e.message || "Failed to create run");
@@ -99,253 +100,311 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">PRD → Blog Post</h1>
-        <p className="text-gray-500">
-          Paste your Product Requirements Document below. Our 4-agent pipeline
-          (Researcher → Writer → Fact-Checker → Style Editor) will produce a
-          publish-ready blog post with citations.
+    <div className="max-w-8xl mx-auto">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="mb-16 text-center"
+      >
+        <span className="inline-block mb-4 px-3 py-1 rounded-full bg-sage-100 text-primary-800 text-xs font-bold uppercase tracking-widest border border-sage-200">
+          Editorial Agent Pipeline
+        </span>
+        <h1 className="font-serif text-5xl md:text-6xl text-primary-900 mb-6 leading-tight tracking-tight">
+          Turn Requirements into <span className="italic text-primary-600">Stories.</span>
+        </h1>
+        <p className="font-sans text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          Orchestrate a team of AI agents to transform your technical PRD into a polished, publish-ready blog post.
         </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        {/* Main PRD Input Section - Takes up 2 columns */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="lg:col-span-2 bg-white rounded-2xl shadow-xl shadow-sage-200/50 border border-sage-100 p-8 md:p-10 relative overflow-hidden"
+        >
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-400 to-primary-600" />
+          
+          {/* PRD Input */}
+          <div className="mb-8">
+            <label className="flex items-center justify-between font-serif text-xl text-primary-900 mb-4">
+              <span>Product Requirements</span>
+              {uploadedFilename && (
+                <span className="flex items-center gap-2 text-xs font-sans font-medium text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                  <CheckCircle2 size={12} />
+                  Loaded: {uploadedFilename}
+                </span>
+              )}
+            </label>
+            <div className="relative group">
+              <textarea
+                rows={12}
+                value={prd}
+                onChange={(e) => {
+                  setPrd(e.target.value);
+                  setUploadedFilename(null);
+                }}
+                placeholder="Paste your PRD content here..."
+                className="w-full bg-paper border-2 border-sage-200 rounded-xl px-5 py-4 text-sm font-mono text-gray-700 focus:ring-0 focus:border-primary-500 outline-none resize-y transition-all placeholder:text-gray-400 leading-relaxed"
+              />
+              <div className="absolute bottom-4 right-4 text-xs text-gray-400 pointer-events-none font-medium">
+                Writing Assistant Ready
+              </div>
+            </div>
+          </div>
+
+          {/* Configuration Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+            <div className="space-y-6">
+               <div>
+                  <label className="flex items-center gap-2 text-sm font-bold text-primary-800 uppercase tracking-wider mb-3">
+                    <Type size={16} /> Tone of Voice
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={tone}
+                      onChange={(e) => setTone(e.target.value)}
+                      className="w-full appearance-none bg-paper border border-sage-200 rounded-lg px-4 py-3 text-sm text-primary-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
+                    >
+                      {TONES.map((t) => (
+                        <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </div>
+                  </div>
+               </div>
+
+               <div>
+                  <label className="flex items-center gap-2 text-sm font-bold text-primary-800 uppercase tracking-wider mb-3">
+                    <Users size={16} /> Target Audience
+                  </label>
+                  <input
+                    value={audience}
+                    onChange={(e) => setAudience(e.target.value)}
+                    placeholder="e.g. Senior Engineers"
+                    className="w-full bg-paper border border-sage-200 rounded-lg px-4 py-3 text-sm text-primary-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
+                  />
+               </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="flex items-center gap-2 text-sm font-bold text-primary-800 uppercase tracking-wider mb-3">
+                  <Sparkles size={16} /> AI Provider
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {Object.entries(MODEL_PROVIDERS).map(([key, provider]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleProviderChange(key as "groq" | "gemini")}
+                      className={cn(
+                        "px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 border",
+                        modelProvider === key
+                          ? "bg-primary-600 text-white border-primary-600 shadow-md transform scale-[1.02]"
+                          : "bg-paper text-gray-600 border-sage-200 hover:border-primary-300 hover:bg-white"
+                      )}
+                    >
+                      {provider.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-sm font-bold text-primary-800 uppercase tracking-wider mb-3">
+                  <Settings2 size={16} /> Model Route
+                </label>
+                <div className="relative">
+                  <select
+                    value={modelName}
+                    onChange={(e) => setModelName(e.target.value)}
+                    className="w-full appearance-none bg-paper border border-sage-200 rounded-lg px-4 py-3 text-sm text-primary-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors"
+                  >
+                    {MODEL_PROVIDERS[modelProvider].models.map((model) => (
+                      <option key={model.id} value={model.id}>
+                        {model.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-10 p-6 bg-sage-50 rounded-xl border border-sage-100">
+            <label className="flex items-center justify-between text-sm font-bold text-primary-800 uppercase tracking-wider mb-4">
+              <span>Word Count Target</span>
+              <span className="text-primary-600 font-mono text-base">{wordCount} words</span>
+            </label>
+            <input
+              type="range"
+              min={200}
+              max={3000}
+              step={100}
+              value={wordCount}
+              onChange={(e) => setWordCount(Number(e.target.value))}
+              className="w-full h-2 bg-sage-200 rounded-lg appearance-none cursor-pointer accent-primary-600 hover:accent-primary-500 transition-all"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-2 font-mono">
+              <span>Short (200)</span>
+              <span>Long Form (3000)</span>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 mb-10 p-4 rounded-lg bg-orange-50 border border-orange-100/50">
+             <div className={`mt-0.5 ${modelProvider === "groq" ? "opacity-30" : "text-primary-600"}`}>
+               <Globe size={18} />
+             </div>
+             <div className="flex-1">
+              <label className={cn(
+                "flex items-center gap-3 text-sm font-medium cursor-pointer transition-colors",
+                modelProvider === "groq" ? "text-gray-400 cursor-not-allowed" : "text-primary-900"
+              )}>
+                <input
+                  type="checkbox"
+                  checked={useWebSearch}
+                  onChange={(e) => setUseWebSearch(e.target.checked)}
+                  disabled={modelProvider === "groq"}
+                  className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 disabled:opacity-50"
+                />
+                Enable Research Agent (Web Search)
+              </label>
+              <p className="text-xs text-gray-500 mt-1 pl-7">
+                 {modelProvider === "groq" 
+                   ? "Web search requires Gemini function calling capabilities." 
+                   : "Allows the researcher to fact-check and find live citations via SerperDev."}
+              </p>
+             </div>
+          </div>
+
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-lg flex items-center gap-2"
+            >
+              <AlertCircle size={16} />
+              {error}
+            </motion.div>
+          )}
+
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-70 disabled:cursor-not-allowed text-white text-lg font-serif tracking-wide py-4 px-6 rounded-xl shadow-lg shadow-primary-900/10 hover:shadow-primary-900/20 transition-all duration-300 transform active:scale-[0.99] flex items-center justify-center gap-3 group"
+          >
+            {loading ? (
+               <>
+                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                 Initializing Agents...
+               </>
+            ) : (
+               <>
+                 Start Editorial Pipeline <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+               </>
+            )}
+          </button>
+        </motion.div>
+
+        {/* File Upload Section - Takes up 1 column */}
+        <div className="space-y-8">
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(6,104,57,0.05)] border border-sage-100 p-8 hover:border-primary-200 transition-colors duration-300 h-full"
+          >
+            <button
+              onClick={() => setShowUpload(!showUpload)}
+              className="w-full flex items-center justify-between text-left mb-6 group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-sage-50 text-primary-700 rounded-lg group-hover:bg-primary-50 transition-colors">
+                   <Settings2 size={24} />
+                </div>
+                <div>
+                  <h2 className="font-serif text-xl text-primary-900">
+                    Upload Document
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    PDF, TXT, or Markdown supported
+                  </p>
+                </div>
+              </div>
+            </button>
+            
+            <AnimatePresence>
+              {showUpload && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-2 border-t border-sage-100">
+                    <FileUpload onTextExtracted={handleFileUpload} />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Template Library Section */}
-      <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+      {/* Template Library Section - Bottom Row */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+        className="bg-white rounded-xl shadow-[0_4px_20px_-4px_rgba(6,104,57,0.05)] border border-sage-100 p-8 hover:border-primary-200 transition-colors duration-300 mb-12"
+      >
         <button
           onClick={() => setShowTemplates(!showTemplates)}
-          className="w-full flex items-center justify-between text-left mb-4"
+          className="w-full flex items-center justify-between text-left mb-6 group"
         >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">📚</span>
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-sage-50 text-primary-700 rounded-lg group-hover:bg-primary-50 transition-colors">
+              <FileText size={24} />
+            </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Try a Sample PRD Template
+              <h2 className="font-serif text-xl text-primary-900">
+                Load a Template
               </h2>
-              <p className="text-sm text-gray-600">
-                Quick start with pre-built examples (100-1000 words)
+              <p className="text-sm text-gray-500 mt-1">
+                Start with a pre-structured example
               </p>
             </div>
           </div>
-          <svg
-            className={`w-6 h-6 text-gray-500 transition-transform ${
-              showTemplates ? "rotate-180" : ""
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
         </button>
         
-        {showTemplates && (
-          <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-            <TemplateLibrary onSelectTemplate={handleTemplateSelect} />
-          </div>
-        )}
-      </div>
-
-      {/* File Upload Section */}
-      <div className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6">
-        <button
-          onClick={() => setShowUpload(!showUpload)}
-          className="w-full flex items-center justify-between text-left mb-4"
-        >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">📤</span>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Upload PRD File
-              </h2>
-              <p className="text-sm text-gray-600">
-                Upload a PDF, TXT, Markdown, or Image file to extract text (OCR supported)
-              </p>
-            </div>
-          </div>
-          <svg
-            className={`w-6 h-6 text-gray-500 transition-transform ${
-              showUpload ? "rotate-180" : ""
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        
-        {showUpload && (
-          <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-            <FileUpload onTextExtracted={handleFileUpload} />
-          </div>
-        )}
-      </div>
-
-      <div className="max-w-2xl mx-auto space-y-5">
-        {/* PRD Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Product Requirements Document *
-            {uploadedFilename && (
-              <span className="ml-2 text-xs text-green-600 font-normal">
-                ✓ Loaded from: {uploadedFilename}
-              </span>
-            )}
-          </label>
-          <textarea
-            rows={10}
-            value={prd}
-            onChange={(e) => {
-              setPrd(e.target.value);
-              setUploadedFilename(null);
-            }}
-            placeholder="Paste your PRD here…"
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-y"
-          />
-        </div>
-
-        {/* Options row */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tone</label>
-            <select
-              value={tone}
-              onChange={(e) => setTone(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+        <AnimatePresence>
+          {showTemplates && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
             >
-              {TONES.map((t) => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Audience</label>
-            <input
-              value={audience}
-              onChange={(e) => setAudience(e.target.value)}
-              placeholder="e.g. engineers, students, business"
-              className="w-full border rounded-lg px-3 py-2 text-sm"
-            />
-          </div>
-        </div>
+              <div className="pt-2 border-t border-sage-100">
+                <TemplateLibrary onSelectTemplate={handleTemplateSelect} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
-        {/* Model Configuration */}
-        <div className="border border-blue-200 bg-blue-50 rounded-lg p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-            <span>🤖</span> AI Model Configuration
-          </h3>
-          
-          {/* Provider Selection */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-2">Provider</label>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.entries(MODEL_PROVIDERS).map(([key, provider]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleProviderChange(key as "groq" | "gemini")}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-                    modelProvider === key
-                      ? "bg-brand-600 text-white"
-                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {provider.name}
-                  {!provider.supportsWebSearch && (
-                    <span className="ml-1 text-xs opacity-75">(No Web Search)</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Model Selection */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Model</label>
-            <select
-              value={modelName}
-              onChange={(e) => setModelName(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 text-sm"
-            >
-              {MODEL_PROVIDERS[modelProvider].models.map((model) => (
-                <option key={model.id} value={model.id}>
-                  {model.name} {model.recommended ? "⭐ Recommended" : ""}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-gray-500 mt-1">
-              💡 {modelProvider === "groq" ? "Free tier: 8B model recommended for low token usage" : "Free tier: Flash models recommended for low token usage"}
-            </p>
-          </div>
-        </div>
-
-        {/* Word count */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Word Count: {wordCount}
-          </label>
-          <input
-            type="range"
-            min={200}
-            max={3000}
-            step={100}
-            value={wordCount}
-            onChange={(e) => setWordCount(Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="flex justify-between text-xs text-gray-400">
-            <span>200</span><span>3000</span>
-          </div>
-        </div>
-
-        {/* Web search toggle */}
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useWebSearch}
-              onChange={(e) => setUseWebSearch(e.target.checked)}
-              disabled={modelProvider === "groq"}
-              className="rounded disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <span className={modelProvider === "groq" ? "text-gray-400" : ""}>
-              Enable web search via SerperDevTool
-            </span>
-          </label>
-          <div className="ml-6 text-xs space-y-1">
-            {modelProvider === "groq" ? (
-              <p className="text-amber-600">
-                ⚠️ Web search requires Gemini models (Groq doesn&apos;t support function calling)
-              </p>
-            ) : (
-              <>
-                <p className="text-blue-600">
-                  ✓ Available with Gemini models
-                </p>
-                <p className="text-gray-500">
-                  Requires SERPER_API_KEY in backend .env
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2">
-            {error}
-          </div>
-        )}
-
-        {/* Submit */}
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-medium rounded-lg py-3 transition"
-        >
-          {loading ? "Creating run…" : "⚡ Run Agents"}
-        </button>
-      </div>
+      {/* New Sections */}
+      <Features />
+      <HowItWorks />
     </div>
   );
 }

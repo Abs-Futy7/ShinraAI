@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { PRD_TEMPLATES, type PrdTemplate } from "@/lib/templates";
+import { Check, Copy, Eye, X, BookOpen, Clock, Tag } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TemplateLibraryProps {
   onSelectTemplate: (content: string) => void;
@@ -26,145 +29,150 @@ export default function TemplateLibrary({ onSelectTemplate }: TemplateLibraryPro
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">
-          📚 Template Library
+    <div className="space-y-6">
+      <div className="flex items-center justify-between pb-4 border-b border-sage-100">
+        <h3 className="text-lg font-serif font-medium text-primary-900 flex items-center gap-2">
+          <BookOpen className="text-primary-500" size={20} />
+          Curated Templates
         </h3>
-        <span className="text-sm text-gray-500">
-          {PRD_TEMPLATES.length} templates available
+        <span className="text-xs font-mono text-gray-400 bg-sage-50 px-2 py-1 rounded">
+          {PRD_TEMPLATES.length} Available
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {PRD_TEMPLATES.map((template) => (
-          <div
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {PRD_TEMPLATES.map((template, index) => (
+          <motion.div
             key={template.id}
-            className="border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+            className="group relative bg-white border border-sage-200 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary-300 transition-all duration-300 flex flex-col h-full"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition">
-                  {template.title}
-                </h4>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">
+            <div className="flex-1">
+              <div className="flex justify-between items-start mb-2">
+                 <span className="text-xs font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-2 py-1 rounded-sm border border-primary-100/50">
                     {template.category}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    ~{template.targetWords} words
-                  </span>
-                </div>
+                 </span>
+                 <div className="flex items-center gap-1 text-xs text-gray-400">
+                    <Clock size={12} />
+                    <span>~{template.targetWords}w</span>
+                 </div>
               </div>
+              
+              <h4 className="font-serif text-lg text-primary-900 mb-2 group-hover:text-primary-600 transition-colors">
+                {template.title}
+              </h4>
+              
+              <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4">
+                {template.description}
+              </p>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-              {template.description}
-            </p>
-
-            <div className="flex gap-2">
+            <div className="flex gap-2 pt-4 border-t border-sage-50">
               <button
                 onClick={() => handleCopy(template)}
-                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition ${
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                   copiedId === template.id
-                    ? "bg-green-50 text-green-700 border border-green-200"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                    : "bg-primary-600 text-white hover:bg-primary-700 shadow-sm hover:shadow"
+                )}
               >
                 {copiedId === template.id ? (
                   <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Copied!
+                    <Check size={14} /> Copied
                   </>
                 ) : (
                   <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    Use Template
+                    <Copy size={14} /> Use
                   </>
                 )}
               </button>
               <button
                 onClick={() => handlePreview(template)}
-                className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 transition"
-                title="Preview"
+                className="px-3 py-2 border border-sage-200 text-gray-600 rounded-lg text-sm font-medium hover:bg-sage-50 hover:text-primary-700 transition-colors"
+                title="Preview Template"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
+                <Eye size={16} />
               </button>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Preview Modal */}
-      {selectedTemplate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            {/* Header */}
-            <div className="px-6 py-4 border-b border-gray-200 flex items-start justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">
-                  {selectedTemplate.title}
-                </h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-sm px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">
-                    {selectedTemplate.category}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    Target: ~{selectedTemplate.targetWords} words
-                  </span>
+      <AnimatePresence>
+        {selectedTemplate && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+            <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               className="absolute inset-0 bg-primary-900/20 backdrop-blur-sm"
+               onClick={closePreview}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[85vh] flex flex-col relative z-10 border border-sage-100 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="px-6 py-5 border-b border-sage-100 flex items-start justify-between bg-paper">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-primary-600 bg-primary-50 px-2 py-1 rounded-sm border border-primary-100/50">
+                        {selectedTemplate.category}
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-serif text-primary-900">
+                    {selectedTemplate.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1 max-w-2xl">
+                    {selectedTemplate.description}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600 mt-2">
-                  {selectedTemplate.description}
-                </p>
+                <button
+                  onClick={closePreview}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-sage-100 rounded-full transition-colors"
+                >
+                  <X size={24} />
+                </button>
               </div>
-              <button
-                onClick={closePreview}
-                className="text-gray-400 hover:text-gray-600 transition"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
 
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto px-6 py-4">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono bg-gray-50 p-4 rounded-lg border border-gray-200">
-                {selectedTemplate.content}
-              </pre>
-            </div>
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto px-8 py-8 bg-paper/50">
+                <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-sage-100">
+                  <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono leading-relaxed">
+                    {selectedTemplate.content}
+                  </pre>
+                </div>
+              </div>
 
-            {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-              <button
-                onClick={closePreview}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md font-medium hover:bg-gray-50 transition"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  handleCopy(selectedTemplate);
-                  closePreview();
-                }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition flex items-center gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                Use This Template
-              </button>
-            </div>
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-sage-100 bg-white flex justify-end gap-3">
+                <button
+                  onClick={closePreview}
+                  className="px-5 py-2.5 border border-sage-200 text-gray-700 rounded-xl font-medium hover:bg-sage-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleCopy(selectedTemplate);
+                    closePreview();
+                  }}
+                  className="px-5 py-2.5 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 shadow-md shadow-primary-900/10 transition-all flex items-center gap-2"
+                >
+                  <Copy size={16} /> Use This Template
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 }

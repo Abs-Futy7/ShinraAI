@@ -1,0 +1,100 @@
+# LinkedIn Pack Tasks Configuration
+# Pipeline B: Three-agent workflow for LinkedIn content generation
+
+claims_check_task:
+  description: >
+    Analyze the final blog post and extract all marketing claims.
+    
+    Blog content: {blog_content}
+    Product name: {product_name}
+    
+    Identify:
+    1. ✅ SAFE CLAIMS - Statements directly supported by blog content
+    2. ⚠️ RISKY CLAIMS - Superlatives ("best", "#1"), guarantees, health/safety claims,
+       unsubstantiated statistics, performance promises
+    
+    For each risky claim, suggest safer wording alternatives:
+    - "may help" instead of "will solve"
+    - "designed to" instead of "guaranteed to"
+    - "customers report" instead of "proven to"
+    
+    Output as JSON:
+    {{
+      "safe_claims": ["claim 1", "claim 2", ...],
+      "risky_claims": [
+        {{"claim": "original text", "risk_type": "superlative|guarantee|stat|etc", "suggestion": "safer alternative"}}
+      ],
+      "overall_assessment": "LOW_RISK|MEDIUM_RISK|HIGH_RISK"
+    }}
+  expected_output: >
+    JSON object with categorized claims and compliance assessment
+  agent: claims_agent
+
+linkedin_post_task:
+  description: >
+    Convert the blog into a LinkedIn post optimized for engagement.
+    
+    Blog content: {blog_content}
+    Target audience: {audience}
+    Tone: {tone}
+    Product name: {product_name}
+    Goal: {goal}
+    AVOID these risky claims: {risky_claims}
+    
+    Requirements:
+    - Length: 120-220 words
+    - Structure:
+      1. Hook (1-2 sentences that grab attention)
+      2. Problem statement or context
+      3. Key benefits (2-4 bullet points for skimmability)
+      4. Call-to-action (demo, waitlist, learn more)
+    - Add 8-12 relevant hashtags (#ProductManagement #TechInnovation #AI etc.)
+    - NO facts beyond the source blog
+    - AVOID all flagged risky claims
+    - Use safer alternatives provided
+    
+    Output as JSON:
+    {{
+      "post_text": "full LinkedIn post text",
+      "hashtags": ["hashtag1", "hashtag2", ...],
+      "cta": "specific call-to-action text",
+      "word_count": 123
+    }}
+  expected_output: >
+    JSON object with ready-to-paste LinkedIn post, hashtags, and CTA
+  agent: linkedin_post_agent
+
+image_prompt_task:
+  description: >
+    Generate an optimized prompt for creating a professional marketing image.
+    
+    LinkedIn post: {linkedin_post}
+    Brand tone: {brand_tone}
+    Product category: {product_category}
+    Brand colors: {brand_colors}
+    
+    Create:
+    1. Main prompt (1-2 sentences) optimized for SDXL-Lightning
+       - Focus on visual concepts, not text
+       - Professional marketing aesthetic
+       - Incorporate brand tone and product category
+       - Use colors if provided
+    
+    2. Negative prompt to avoid common failures
+       - "no text, no watermarks, no logos, no words"
+       - Other quality controls
+    
+    Examples of good prompts:
+    - "Modern minimalist workspace with laptop showing analytics dashboard, soft blue lighting, professional photography style, clean composition"
+    - "Abstract representation of AI neural network connections, vibrant purple and teal gradient, futuristic tech aesthetic, high quality render"
+    
+    Output as JSON:
+    {{
+      "prompt": "your optimized prompt here",
+      "negative_prompt": "what to avoid",
+      "model_suggestion": "SDXL-Lightning",
+      "style_notes": "brief description of expected visual outcome"
+    }}
+  expected_output: >
+    JSON object with image generation prompt optimized for SDXL
+  agent: image_prompt_agent

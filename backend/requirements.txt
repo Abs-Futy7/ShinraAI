@@ -6,10 +6,12 @@ crewai[tools,google-genai]==0.80.0
 aiofiles==24.1.0
 litellm
 markdown==3.6
-# PDF Export dependencies (requires GTK+ on Windows - see WINDOWS_SETUP.md)
-# For quick start without PDF: comment out the next 2 lines
-weasyprint==62.3
+# Leonardo AI integration
+httpx==0.27.0
+# PDF Export dependencies
+aspose-html-net==26.1.0
 pygments==2.18.0
+# OCR and image processing
 pytesseract
 pillow
 pypdf 

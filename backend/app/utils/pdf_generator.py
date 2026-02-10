@@ -1,12 +1,15 @@
 """
-PDF generation utility for blog posts with styled citations.
+PDF generation utility for blog posts using Aspose.HTML.
 """
+import os
+import tempfile
 import markdown
 from markdown.extensions.codehilite import CodeHiliteExtension
 from markdown.extensions.tables import TableExtension
 from markdown.extensions.fenced_code import FencedCodeExtension
-from weasyprint import HTML, CSS
-from weasyprint.text.fonts import FontConfiguration
+import aspose.html as html
+import aspose.html.converters as converters
+import aspose.html.saving as saving
 import re
 from typing import Optional
 from datetime import datetime
@@ -266,17 +269,18 @@ h1, h2, h3, h4, h5, h6 {
 """
 
 
-def enhance_citations_in_markdown(markdown_text: str) -> str:
+def enhance_citations_in_html(html_text: str) -> str:
     """
-    Convert [S#] citation format to styled superscript for PDF.
+    Convert [S#] citation format to styled span for PDF.
+    Applied AFTER markdown to HTML conversion to avoid escaping.
     
-    Example: [S1] -> <sup class="citation">[S1]</sup>
+    Example: [S1] -> <span class="citation-ref">[S1]</span>
     """
-    # Replace [S#] with styled superscript
+    # Replace [S#] with styled span
     enhanced = re.sub(
         r'\[S(\d+)\]',
-        r'<sup class="citation">[S\1]</sup>',
-        markdown_text
+        r'<span class="citation-ref">[S\1]</span>',
+        html_text
     )
     return enhanced
 
@@ -363,7 +367,7 @@ def markdown_to_pdf(
     created_at: Optional[str] = None
 ) -> None:
     """
-    Convert markdown blog post to styled PDF with preserved citations.
+    Convert markdown blog post to beautifully styled PDF using Aspose.HTML.
     
     Args:
         markdown_text: Blog post in Markdown format with [S#] citations
@@ -373,10 +377,7 @@ def markdown_to_pdf(
         run_id: Unique run identifier
         created_at: Timestamp of run creation
     """
-    # Enhance citations in markdown
-    enhanced_markdown = enhance_citations_in_markdown(markdown_text)
-    
-    # Convert markdown to HTML
+    # Convert markdown to HTML first (keep citations as [S#] for now)
     md = markdown.Markdown(
         extensions=[
             'extra',           # Tables, def lists, etc.
@@ -393,42 +394,359 @@ def markdown_to_pdf(
         }
     )
     
-    blog_html = md.convert(enhanced_markdown)
+    blog_html = md.convert(markdown_text)
     
-    # Build complete HTML document
-    html_content = "<!DOCTYPE html>\n<html>\n<head>\n"
-    html_content += '<meta charset="UTF-8">\n'
-    html_content += '<title>FactFlow AI - Blog Post</title>\n'
-    html_content += '</head>\n<body>\n'
+    # NOW enhance citations in the HTML (after markdown conversion)
+    blog_html = enhance_citations_in_html(blog_html)
     
-    # Add metadata section if provided
+    # Build complete styled HTML document
+    html_content = """<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FactFlow AI - Blog Post</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm 2cm;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: #1f2937;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Header with metadata */
+        .metadata-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metadata-header h1 {
+            margin: 0 0 1rem 0;
+            font-size: 24pt;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            font-size: 9pt;
+            opacity: 0.95;
+        }
+        
+        .metadata-item {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .metadata-label {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        /* Main content */
+        h1 {
+            font-size: 28pt;
+            font-weight: 700;
+            color: #111827;
+            margin: 2rem 0 1.5rem 0;
+            line-height: 1.2;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        h2 {
+            font-size: 20pt;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 2rem 0 1rem 0;
+            line-height: 1.3;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.4rem;
+        }
+        
+        h3 {
+            font-size: 16pt;
+            font-weight: 600;
+            color: #374151;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+        
+        h4, h5, h6 {
+            font-size: 13pt;
+            font-weight: 600;
+            color: #4b5563;
+            margin: 1rem 0 0.5rem 0;
+        }
+        
+        p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+            color: #374151;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin-bottom: 1.2rem;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.6rem;
+            color: #374151;
+        }
+        
+        /* Citations */
+        .citation-ref {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8pt;
+            font-weight: 600;
+            margin: 0 2px;
+            text-decoration: none;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 9pt;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #e91e63;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #1f2937;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: #6b7280;
+            font-style: italic;
+            background: #f9fafb;
+            padding: 1rem 1rem 1rem 1.5rem;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        /* Links */
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        /* References section */
+        .references-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 3px solid #e5e7eb;
+        }
+        
+        .references-section h2 {
+            color: #667eea;
+            font-size: 22pt;
+            margin-bottom: 1.5rem;
+        }
+        
+        .citation-item {
+            margin-bottom: 1.2rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .citation-id {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            font-size: 9pt;
+        }
+        
+        .citation-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 10pt;
+        }
+        
+        .citation-url {
+            color: #6b7280;
+            font-size: 9pt;
+            word-break: break-all;
+            margin-top: 0.25rem;
+            display: block;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+"""
+    
+    # Add metadata header if provided
     if run_config and run_id and created_at:
-        html_content += generate_metadata_html(run_config, run_id, created_at)
+        try:
+            created_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            formatted_date = created_date.strftime('%B %d, %Y at %I:%M %p')
+        except:
+            formatted_date = created_at
+        
+        html_content += f"""
+    <div class="metadata-header">
+        <h1>{run_config.get('topic', 'Blog Post')}</h1>
+        <div style="font-size: 10pt; opacity: 0.9;">Generated by FactFlow AI</div>
+        <div class="metadata-grid">
+            <div class="metadata-item">
+                <span class="metadata-label">📅 Date:</span>
+                <span>{formatted_date}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">🎯 Tone:</span>
+                <span>{run_config.get('tone', 'N/A')}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">👥 Audience:</span>
+                <span>{run_config.get('audience', 'N/A')}</span>
+            </div>
+            <div class="metadata-item">
+                <span class="metadata-label">📝 Target Words:</span>
+                <span>{run_config.get('word_count', 'N/A')}</span>
+            </div>
+        </div>
+    </div>
+"""
     
     # Add blog content
     html_content += blog_html
     
     # Add citations section if provided
     if citations:
-        html_content += generate_citations_html(citations)
+        html_content += '<div class="references-section"><h2>📚 References</h2>'
+        for citation in citations:
+            citation_id = citation.get('id', 'N/A')
+            title = citation.get('title', 'Untitled')
+            url = citation.get('url', 'N/A')
+            
+            if url == 'internal' or url == 'N/A':
+                url_display = '<span class="citation-url">(Internal source)</span>'
+            else:
+                url_display = f'<span class="citation-url">{url}</span>'
+            
+            html_content += f"""
+        <div class="citation-item">
+            <span class="citation-id">{citation_id}</span>
+            <span class="citation-title">{title}</span>
+            {url_display}
+        </div>
+"""
+        html_content += '</div>'
     
-    html_content += "\n</body>\n</html>"
+    # Add footer
+    html_content += """
+    <div class="footer">
+        Generated with FactFlow AI • Powered by CrewAI & Groq
+    </div>
+</body>
+</html>
+"""
     
-    # Generate PDF with WeasyPrint
-    font_config = FontConfiguration()
-    html_doc = HTML(string=html_content)
-    css = CSS(string=PDF_CSS, font_config=font_config)
+    # Create temporary HTML file
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False, encoding='utf-8') as temp_html:
+        temp_html.write(html_content)
+        temp_html_path = temp_html.name
     
-    html_doc.write_pdf(
-        output_path,
-        stylesheets=[css],
-        font_config=font_config
-    )
+    try:
+        # Load HTML document
+        document = html.HTMLDocument(temp_html_path)
+        
+        # Create PDF save options
+        pdf_options = saving.PdfSaveOptions()
+        pdf_options.jpeg_quality = 95
+        
+        # Convert HTML to PDF
+        converters.Converter.convert_html(document, pdf_options, output_path)
+    finally:
+        # Clean up temporary file
+        if os.path.exists(temp_html_path):
+            os.remove(temp_html_path)
 
 
 def generate_pdf_from_run_state(run_state: dict, output_path: str = None) -> bytes:
     """
-    Generate PDF from complete run state object.
+    Generate PDF from complete run state object using Aspose.HTML.
     
     Args:
         run_state: Complete run state dictionary from state.json
@@ -459,64 +777,32 @@ def generate_pdf_from_run_state(run_state: dict, output_path: str = None) -> byt
     run_id = run_state.get('run_id', 'unknown')
     created_at = run_state.get('created_at', 'unknown')
     
-    # Enhance citations in markdown
-    enhanced_markdown = enhance_citations_in_markdown(final_blog)
-    
-    # Convert markdown to HTML
-    md = markdown.Markdown(
-        extensions=[
-            'extra',           # Tables, def lists, etc.
-            'codehilite',      # Syntax highlighting
-            'fenced_code',     # ``` code blocks
-            'nl2br',           # Newline to <br>
-            'sane_lists',      # Better list handling
-        ],
-        extension_configs={
-            'codehilite': {
-                'css_class': 'highlight',
-                'linenums': False
-            }
-        }
-    )
-    
-    blog_html = md.convert(enhanced_markdown)
-    
-    # Build complete HTML document
-    html_content = "<!DOCTYPE html>\n<html>\n<head>\n"
-    html_content += '<meta charset="UTF-8">\n'
-    html_content += '<title>FactFlow AI - Blog Post</title>\n'
-    html_content += '</head>\n<body>\n'
-    
-    # Add metadata section if provided
-    if run_config and run_id and created_at:
-        html_content += generate_metadata_html(run_config, run_id, created_at)
-    
-    # Add blog content
-    html_content += blog_html
-    
-    # Add citations section if provided
-    if citations:
-        html_content += generate_citations_html(citations)
-    
-    html_content += "\n</body>\n</html>"
-    
-    # Generate PDF with WeasyPrint
-    font_config = FontConfiguration()
-    html_doc = HTML(string=html_content)
-    css = CSS(string=PDF_CSS, font_config=font_config)
-    
-    # If output_path provided, write to file and return bytes
-    if output_path:
-        html_doc.write_pdf(
-            output_path,
-            stylesheets=[css],
-            font_config=font_config
-        )
-        with open(output_path, 'rb') as f:
-            return f.read()
+    # Generate PDF to temp file if no output_path provided
+    if not output_path:
+        temp_pdf = tempfile.NamedTemporaryFile(mode='wb', suffix='.pdf', delete=False)
+        output_path = temp_pdf.name
+        temp_pdf.close()
+        cleanup_temp = True
     else:
-        # Return bytes directly
-        return html_doc.write_pdf(
-            stylesheets=[css],
-            font_config=font_config
+        cleanup_temp = False
+    
+    try:
+        # Use markdown_to_pdf to generate the PDF
+        markdown_to_pdf(
+            markdown_text=final_blog,
+            output_path=output_path,
+            citations=citations,
+            run_config=run_config,
+            run_id=run_id,
+            created_at=created_at
         )
+        
+        # Read and return the PDF bytes
+        with open(output_path, 'rb') as f:
+            pdf_bytes = f.read()
+        
+        return pdf_bytes
+    finally:
+        # Clean up temp file if we created one
+        if cleanup_temp and os.path.exists(output_path):
+            os.remove(output_path)

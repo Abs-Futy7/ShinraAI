@@ -14,13 +14,13 @@ export default function SourcesList({ sources }: Props) {
       <div className="space-y-1">
         {sources.map((s) => (
           <div key={s.id} className="flex items-start gap-2 text-sm">
-            <span className="font-mono text-xs bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded flex-shrink-0">
+            <span className="font-mono text-xs bg-primary-100 text-primary-700 px-1.5 py-0.5 rounded flex-shrink-0">
               {s.id}
             </span>
             <div>
               <span className="font-medium text-gray-800">{s.title}</span>
               {s.url && !s.url.startsWith("internal") && (
-                <a href={s.url} className="ml-1 text-brand-600 underline text-xs" target="_blank" rel="noopener noreferrer">
+                <a href={s.url} className="ml-1 text-primary-600 underline text-xs" target="_blank" rel="noopener noreferrer">
                   ↗
                 </a>
               )}

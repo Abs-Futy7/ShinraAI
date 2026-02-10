@@ -82,7 +82,7 @@ export default function Timeline({ state, onFeedback, canEdit = false }: Timelin
                     onClick={() => setActiveDraft(i)}
                     className={`px-3 py-1 text-xs rounded-full font-medium transition ${
                       activeDraft === i
-                        ? "bg-brand-600 text-white"
+                        ? "bg-primary-600 text-white"
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -172,10 +172,14 @@ export default function Timeline({ state, onFeedback, canEdit = false }: Timelin
           <h3 className="font-semibold text-sm text-gray-700 mb-2">📚 Citations</h3>
           <ol className="list-decimal pl-5 text-sm space-y-1">
             {citations.map((c) => (
-              <li key={c.id}>
-                <span className="font-mono text-xs text-brand-600">[{c.id}]</span>{" "}
+              <li 
+                key={c.id}
+                id={`citation-${c.id}`}
+                className="scroll-mt-20 transition-colors duration-300"
+              >
+                <span className="font-mono text-xs text-primary-600">[{c.id}]</span>{" "}
                 {c.url.startsWith("http") ? (
-                  <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-brand-600 underline">
+                  <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-primary-600 underline">
                     {c.title}
                   </a>
                 ) : (
