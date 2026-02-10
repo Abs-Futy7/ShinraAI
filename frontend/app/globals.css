@@ -3,25 +3,34 @@
 @tailwind utilities;
 
 :root {
-  --foreground: #111827;
-  --background: #f9fafb;
+  --foreground: #111311;
+  --background: #F9F9F7;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, sans-serif;
+  /* Smooth scrolling for the whole page */
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Markdown prose styles */
-.prose h1 { @apply text-3xl font-bold mb-4 mt-6; }
-.prose h2 { @apply text-2xl font-semibold mb-3 mt-5; }
-.prose h3 { @apply text-xl font-semibold mb-2 mt-4; }
-.prose p  { @apply mb-3 leading-relaxed; }
-.prose ul { @apply list-disc pl-6 mb-3; }
-.prose ol { @apply list-decimal pl-6 mb-3; }
-.prose li { @apply mb-1; }
-.prose blockquote { @apply border-l-4 border-brand-500 pl-4 italic text-gray-600 my-4; }
-.prose code { @apply bg-gray-100 rounded px-1 py-0.5 text-sm; }
-.prose pre { @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto mb-4; }
-.prose a { @apply text-brand-600 underline; }
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom Editorial Prose Styles */
+.prose h1 { @apply font-serif text-4xl font-light text-primary-900 mb-6 mt-8 tracking-tight; }
+.prose h2 { @apply font-serif text-2xl font-light text-primary-800 mb-4 mt-8; }
+.prose h3 { @apply font-sans text-lg font-bold uppercase tracking-widest text-primary-600 mb-3 mt-6; }
+.prose p  { @apply font-sans text-base leading-7 text-gray-700 mb-5; }
+.prose ul { @apply list-disc pl-6 mb-5 marker:text-primary-400; }
+.prose ol { @apply list-decimal pl-6 mb-5 marker:text-primary-400; }
+.prose li { @apply mb-2 pl-2; }
+.prose blockquote { @apply border-l-2 border-primary-500 pl-6 italic font-serif text-xl text-primary-700 my-8 bg-sage-50 py-4 pr-4 rounded-r-lg; }
+.prose code { @apply bg-sage-100/50 text-primary-800 rounded px-1.5 py-0.5 text-sm font-medium border border-sage-200; }
+.prose pre { @apply bg-primary-900 text-sage-50 rounded-xl p-6 overflow-x-auto mb-8 shadow-lg; }
+.prose a { @apply text-primary-600 underline decoration-primary-300 underline-offset-4 hover:decoration-primary-600 transition-all; }

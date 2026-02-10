@@ -1,0 +1,439 @@
+[2026-02-09T13:07:14+00:00] Run initialised
+[2026-02-09T13:07:16+00:00] Crew built (PrdBlogCrew with groq/llama-3.1-8b-instant)
+[2026-02-09T13:07:16+00:00] ▶ Step 1: Researcher starting
+[2026-02-09T13:07:18+00:00] ✓ Research done – 1 sources found
+[2026-02-09T13:07:18+00:00] ▶ Step 2: Writer iteration 1
+[2026-02-09T13:07:20+00:00] ✓ Draft 1 written (3198 chars)
+[2026-02-09T13:07:20+00:00] ▶ Step 3: Fact-Checker iteration 1
+[2026-02-09T13:07:23+00:00] ✗ Fact-check 1: passed=False, issues=4
+[2026-02-09T13:07:23+00:00] ▶ Step 2: Writer iteration 2
+[2026-02-09T13:07:25+00:00] ✓ Draft 2 written (3828 chars)
+[2026-02-09T13:07:25+00:00] ▶ Step 3: Fact-Checker iteration 2
+[2026-02-09T13:07:30+00:00] ⚠ Rate limit hit in fact_check_task - fallback chain exhausted
+[2026-02-09T13:07:30+00:00] ERROR in fact_check_task: Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 221, in _make_common_sync_call
+    response = sync_httpx_client.post(
+        url=api_base,
+    ...<8 lines>...
+        logging_obj=logging_obj,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\http_handler.py", line 1028, in post
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\http_handler.py", line 1010, in post
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\httpx\_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\main.py", line 2191, in completion
+    response = base_llm_http_handler.completion(
+        model=model,
+    ...<14 lines>...
+        client=client,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 524, in completion
+    response = self._make_common_sync_call(
+        sync_httpx_client=sync_httpx_client,
+    ...<7 lines>...
+        logging_obj=logging_obj,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 246, in _make_common_sync_call
+    raise self._handle_error(e=e, provider_config=provider_config)
+          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 4505, in _handle_error
+    raise provider_config.get_error_class(
+    ...<3 lines>...
+    )
+litellm.llms.openai.common_utils.OpenAIError: {"error":{"message":"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jveapf2eecmtzx4bnsr8nf4y` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5554, Requested 2688. Please try again in 22.42s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\app\crew\crew.py", line 220, in kickoff_step
+    result = mini_crew.kickoff(inputs=inputs)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 743, in kickoff
+    result = self._run_sequential_process()
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 1150, in _run_sequential_process
+    return self._execute_tasks(self.tasks)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 1236, in _execute_tasks
+    task_output = task.execute_sync(
+        agent=exec_data.agent,
+        context=context,
+        tools=exec_data.tools,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 499, in execute_sync
+    return self._execute_core(agent, context, tools)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 740, in _execute_core
+    raise e  # Re-raise the exception after emitting the event
+    ^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 671, in _execute_core
+    result = agent.execute_task(
+        task=self,
+        context=context,
+        tools=tools,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 481, in execute_task
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 459, in execute_task
+    result = self._execute_without_timeout(task_prompt, task)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 568, in _execute_without_timeout
+    return self.agent_executor.invoke(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<4 lines>...
+        }
+        ^
+    )["output"]
+    ^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 207, in invoke
+    formatted_answer = self._invoke_loop()
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 308, in _invoke_loop
+    return self._invoke_loop_react()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 429, in _invoke_loop_react
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 337, in _invoke_loop_react
+    answer = get_llm_response(
+        llm=self.llm,
+    ...<7 lines>...
+        verbose=self.agent.verbose,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\utilities\agent_utils.py", line 372, in get_llm_response
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\utilities\agent_utils.py", line 362, in get_llm_response
+    answer = llm.call(
+        messages,
+    ...<5 lines>...
+        response_model=response_model,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llm.py", line 1719, in call
+    result = self._handle_non_streaming_response(
+        params=params,
+    ...<4 lines>...
+        response_model=response_model,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llm.py", line 1169, in _handle_non_streaming_response
+    response = litellm.completion(**params)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\utils.py", line 1748, in wrapper
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\utils.py", line 1569, in wrapper
+    result = original_function(*args, **kwargs)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\main.py", line 4305, in completion
+    raise exception_type(
+          ~~~~~~~~~~~~~~^
+        model=model,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        extra_kwargs=kwargs,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\litellm_core_utils\exception_mapping_utils.py", line 2378, in exception_type
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\litellm_core_utils\exception_mapping_utils.py", line 382, in exception_type
+    raise RateLimitError(
+    ...<4 lines>...
+    )
+litellm.exceptions.RateLimitError: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jveapf2eecmtzx4bnsr8nf4y` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5554, Requested 2688. Please try again in 22.42s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 221, in _make_common_sync_call
+    response = sync_httpx_client.post(
+        url=api_base,
+    ...<8 lines>...
+        logging_obj=logging_obj,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\http_handler.py", line 1028, in post
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\http_handler.py", line 1010, in post
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\httpx\_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\main.py", line 2191, in completion
+    response = base_llm_http_handler.completion(
+        model=model,
+    ...<14 lines>...
+        client=client,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 524, in completion
+    response = self._make_common_sync_call(
+        sync_httpx_client=sync_httpx_client,
+    ...<7 lines>...
+        logging_obj=logging_obj,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 246, in _make_common_sync_call
+    raise self._handle_error(e=e, provider_config=provider_config)
+          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 4505, in _handle_error
+    raise provider_config.get_error_class(
+    ...<3 lines>...
+    )
+litellm.llms.openai.common_utils.OpenAIError: {"error":{"message":"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jveapf2eecmtzx4bnsr8nf4y` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5206, Requested 3751. Please try again in 29.57s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\app\crew\crew.py", line 220, in kickoff_step
+    result = mini_crew.kickoff(inputs=inputs)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 743, in kickoff
+    result = self._run_sequential_process()
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 1150, in _run_sequential_process
+    return self._execute_tasks(self.tasks)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 1236, in _execute_tasks
+    task_output = task.execute_sync(
+        agent=exec_data.agent,
+        context=context,
+        tools=exec_data.tools,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 499, in execute_sync
+    return self._execute_core(agent, context, tools)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 740, in _execute_core
+    raise e  # Re-raise the exception after emitting the event
+    ^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 671, in _execute_core
+    result = agent.execute_task(
+        task=self,
+        context=context,
+        tools=tools,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 481, in execute_task
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 459, in execute_task
+    result = self._execute_without_timeout(task_prompt, task)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 568, in _execute_without_timeout
+    return self.agent_executor.invoke(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<4 lines>...
+        }
+        ^
+    )["output"]
+    ^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 207, in invoke
+    formatted_answer = self._invoke_loop()
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 308, in _invoke_loop
+    return self._invoke_loop_react()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 429, in _invoke_loop_react
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 337, in _invoke_loop_react
+    answer = get_llm_response(
+        llm=self.llm,
+    ...<7 lines>...
+        verbose=self.agent.verbose,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\utilities\agent_utils.py", line 372, in get_llm_response
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\utilities\agent_utils.py", line 362, in get_llm_response
+    answer = llm.call(
+        messages,
+    ...<5 lines>...
+        response_model=response_model,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llm.py", line 1719, in call
+    result = self._handle_non_streaming_response(
+        params=params,
+    ...<4 lines>...
+        response_model=response_model,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llm.py", line 1169, in _handle_non_streaming_response
+    response = litellm.completion(**params)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\utils.py", line 1748, in wrapper
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\utils.py", line 1569, in wrapper
+    result = original_function(*args, **kwargs)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\main.py", line 4305, in completion
+    raise exception_type(
+          ~~~~~~~~~~~~~~^
+        model=model,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        extra_kwargs=kwargs,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\litellm_core_utils\exception_mapping_utils.py", line 2378, in exception_type
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\litellm_core_utils\exception_mapping_utils.py", line 382, in exception_type
+    raise RateLimitError(
+    ...<4 lines>...
+    )
+litellm.exceptions.RateLimitError: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jveapf2eecmtzx4bnsr8nf4y` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5206, Requested 3751. Please try again in 29.57s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 221, in _make_common_sync_call
+    response = sync_httpx_client.post(
+        url=api_base,
+    ...<8 lines>...
+        logging_obj=logging_obj,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\http_handler.py", line 1028, in post
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\http_handler.py", line 1010, in post
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\httpx\_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\main.py", line 2191, in completion
+    response = base_llm_http_handler.completion(
+        model=model,
+    ...<14 lines>...
+        client=client,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 524, in completion
+    response = self._make_common_sync_call(
+        sync_httpx_client=sync_httpx_client,
+    ...<7 lines>...
+        logging_obj=logging_obj,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 246, in _make_common_sync_call
+    raise self._handle_error(e=e, provider_config=provider_config)
+          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\llms\custom_httpx\llm_http_handler.py", line 4505, in _handle_error
+    raise provider_config.get_error_class(
+    ...<3 lines>...
+    )
+litellm.llms.openai.common_utils.OpenAIError: {"error":{"message":"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jveapf2eecmtzx4bnsr8nf4y` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5074, Requested 4814. Please try again in 38.88s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\app\services\orchestrator.py", line 174, in _kickoff
+    result = await loop.run_in_executor(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        None, crew_instance.kickoff_step, task_key, inputs, 0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "E:\WebDev\Next\Shinrai\backend\app\crew\crew.py", line 227, in kickoff_step
+    return self.kickoff_step(task_key, inputs, retry_count + 1)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\app\crew\crew.py", line 227, in kickoff_step
+    return self.kickoff_step(task_key, inputs, retry_count + 1)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\app\crew\crew.py", line 220, in kickoff_step
+    result = mini_crew.kickoff(inputs=inputs)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 743, in kickoff
+    result = self._run_sequential_process()
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 1150, in _run_sequential_process
+    return self._execute_tasks(self.tasks)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 1236, in _execute_tasks
+    task_output = task.execute_sync(
+        agent=exec_data.agent,
+        context=context,
+        tools=exec_data.tools,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 499, in execute_sync
+    return self._execute_core(agent, context, tools)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 740, in _execute_core
+    raise e  # Re-raise the exception after emitting the event
+    ^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 671, in _execute_core
+    result = agent.execute_task(
+        task=self,
+        context=context,
+        tools=tools,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 481, in execute_task
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 459, in execute_task
+    result = self._execute_without_timeout(task_prompt, task)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 568, in _execute_without_timeout
+    return self.agent_executor.invoke(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<4 lines>...
+        }
+        ^
+    )["output"]
+    ^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 207, in invoke
+    formatted_answer = self._invoke_loop()
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 308, in _invoke_loop
+    return self._invoke_loop_react()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 429, in _invoke_loop_react
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 337, in _invoke_loop_react
+    answer = get_llm_response(
+        llm=self.llm,
+    ...<7 lines>...
+        verbose=self.agent.verbose,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\utilities\agent_utils.py", line 372, in get_llm_response
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\utilities\agent_utils.py", line 362, in get_llm_response
+    answer = llm.call(
+        messages,
+    ...<5 lines>...
+        response_model=response_model,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llm.py", line 1719, in call
+    result = self._handle_non_streaming_response(
+        params=params,
+    ...<4 lines>...
+        response_model=response_model,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llm.py", line 1169, in _handle_non_streaming_response
+    response = litellm.completion(**params)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\utils.py", line 1748, in wrapper
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\utils.py", line 1569, in wrapper
+    result = original_function(*args, **kwargs)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\main.py", line 4305, in completion
+    raise exception_type(
+          ~~~~~~~~~~~~~~^
+        model=model,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        extra_kwargs=kwargs,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\litellm_core_utils\exception_mapping_utils.py", line 2378, in exception_type
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\litellm\litellm_core_utils\exception_mapping_utils.py", line 382, in exception_type
+    raise RateLimitError(
+    ...<4 lines>...
+    )
+litellm.exceptions.RateLimitError: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `llama-3.1-8b-instant` in organization `org_01jveapf2eecmtzx4bnsr8nf4y` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5074, Requested 4814. Please try again in 38.88s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+

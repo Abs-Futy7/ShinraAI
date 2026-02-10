@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getRun, executeRun, downloadPdf, triggerPdfDownload, submitFeedback } from "@/lib/api";
 import type { RunState } from "@/lib/types";
 import Timeline from "@/components/Timeline";
@@ -10,6 +10,7 @@ import FeedbackModal from "@/components/FeedbackModal";
 
 export default function RunPage() {
   const { runId } = useParams<{ runId: string }>();
+  const router = useRouter();
   const [state, setState] = useState<RunState | null>(null);
   const [error, setError] = useState("");
   const [executing, setExecuting] = useState(false);
@@ -137,7 +138,7 @@ export default function RunPage() {
   if (!state) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         <span className="ml-3 text-gray-500">Loading run…</span>
       </div>
     );
@@ -192,7 +193,20 @@ export default function RunPage() {
       {/* Final output + downloads */}
       {isDone && state.steps?.final?.markdown && (
         <div className="mt-8">
-          <h2 className="text-xl font-bold mb-4">Final Blog Post</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">Final Blog Post</h2>
+            {/* LinkedIn Pack Button - Navigate to dedicated page */}
+            <button
+              onClick={() => router.push(`/runs/${runId}/linkedin`)}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition flex items-center gap-2"
+            >
+              {state.linkedin_pack ? (
+                <>💼 View LinkedIn Pack</>
+              ) : (
+                <>💼 Generate LinkedIn Pack</>
+              )}
+            </button>
+          </div>
           <MarkdownViewer content={state.steps.final.markdown} />
           <div className="flex gap-3 mt-4">
             <button
@@ -211,7 +225,7 @@ export default function RunPage() {
             </button>
             <button
               onClick={() => downloadFile(state.steps.final!.markdown, "blog-post.md")}
-              className="bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
+              className="bg-green-600 hover:bg-primary-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
             >
               ⬇ Download .md
             </button>

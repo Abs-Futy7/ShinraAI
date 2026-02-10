@@ -103,6 +103,16 @@ class RunStore:
         self._save(run_id, state)
         self.log(run_id, f"📝 User feedback added for stage: {stage}")
 
+    def update_linkedin_pack(self, run_id: str, component: str, data: dict):
+        """Store LinkedIn pack generation results."""
+        state = self.load(run_id) or {}
+        if "linkedin_pack" not in state:
+            state["linkedin_pack"] = {}
+        
+        state["linkedin_pack"][component] = data
+        self._save(run_id, state)
+        self.log(run_id, f"💼 LinkedIn pack updated: {component}")
+
     # ── logging ───────────────────────────────────────────────────────────
 
     def log(self, run_id: str, message: str):

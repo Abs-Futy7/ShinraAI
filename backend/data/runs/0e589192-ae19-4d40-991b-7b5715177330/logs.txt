@@ -1,0 +1,40 @@
+[2026-02-09T13:07:51+00:00] Run initialised
+[2026-02-09T13:07:56+00:00] Crew built (PrdBlogCrew with gemini/gemini-2.5-flash)
+[2026-02-09T13:07:56+00:00] ▶ Step 1: Researcher starting
+[2026-02-09T13:08:01+00:00] ✓ Research done – 1 sources found
+[2026-02-09T13:08:01+00:00] ▶ Step 2: Writer iteration 1
+[2026-02-09T13:08:06+00:00] ✓ Draft 1 written (1440 chars)
+[2026-02-09T13:08:06+00:00] ▶ Step 3: Fact-Checker iteration 1
+[2026-02-09T13:08:11+00:00] ✓ Fact-check 1: passed=True, issues=0
+[2026-02-09T13:08:11+00:00] ▶ Step 4: Style Polisher starting
+[2026-02-09T13:08:21+00:00] ✓ Pipeline complete – status=DONE
+[2026-02-09T13:09:45+00:00] 🚀 Starting LinkedIn Pack generation (Pipeline B)
+[2026-02-09T13:09:47+00:00] Crew built (LinkedInPackCrew with gemini/gemini-2.5-flash)
+[2026-02-09T13:09:47+00:00] ▶ Step 1: Claims Agent - analyzing for risky claims...
+[2026-02-09T13:09:47+00:00] ❌ Task claims_check_task failed: 1 validation error for TaskStartedEvent
+context
+  Input should be a valid string [type=string_type, input_value={'blog_content': "## Impl...ct_name': 'the product'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+[2026-02-09T13:09:47+00:00] ⚠ Claims check output parsing failed, proceeding with empty claims
+[2026-02-09T13:09:47+00:00] ✓ Claims check: 0 safe, 0 risky (UNKNOWN)
+[2026-02-09T13:09:47+00:00] 💼 LinkedIn pack updated: claims_check
+[2026-02-09T13:09:47+00:00] ▶ Step 2: LinkedIn Post Agent - creating platform-optimized post...
+[2026-02-09T13:09:47+00:00] ❌ Task linkedin_post_task failed: 1 validation error for TaskStartedEvent
+context
+  Input should be a valid string [type=string_type, input_value={'blog_content': "## Impl...oceed with confidence.'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+[2026-02-09T13:09:47+00:00] ⚠ LinkedIn post parsing failed
+[2026-02-09T13:09:47+00:00] ✓ LinkedIn post created (0 words, 0 hashtags)
+[2026-02-09T13:09:47+00:00] 💼 LinkedIn pack updated: linkedin_post
+[2026-02-09T13:09:47+00:00] ▶ Step 3: Image Prompt Agent - generating SDXL-optimized prompt...
+[2026-02-09T13:09:47+00:00] ❌ Task image_prompt_task failed: 1 validation error for TaskStartedEvent
+context
+  Input should be a valid string [type=string_type, input_value={'linkedin_post': 'Linked...olors': 'not specified'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/string_type
+[2026-02-09T13:09:47+00:00] ⚠ Image prompt parsing failed, using fallback
+[2026-02-09T13:09:47+00:00] ✓ Image prompt generated for SDXL-Lightning
+[2026-02-09T13:09:47+00:00] 💼 LinkedIn pack updated: image_prompt
+[2026-02-09T13:09:47+00:00] ✅ LinkedIn Pack generation complete!
+[2026-02-09T13:09:47+00:00]    → Claims: UNKNOWN
+[2026-02-09T13:09:47+00:00]    → Post: 0 words
+[2026-02-09T13:09:47+00:00]    → Image prompt ready for SDXL-Lightning

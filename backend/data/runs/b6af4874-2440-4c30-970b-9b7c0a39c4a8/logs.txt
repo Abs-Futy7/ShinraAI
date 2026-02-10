@@ -1,0 +1,57 @@
+[2026-02-09T14:19:07+00:00] Run initialised
+[2026-02-09T14:19:11+00:00] Crew built (PrdBlogCrew with gemini/gemini-2.5-flash)
+[2026-02-09T14:19:11+00:00] ▶ Step 1: Researcher starting
+[2026-02-09T14:19:16+00:00] ✓ Research done – 1 sources found
+[2026-02-09T14:19:16+00:00] ▶ Step 2: Writer iteration 1
+[2026-02-09T14:19:20+00:00] ✓ Draft 1 written (1677 chars)
+[2026-02-09T14:19:20+00:00] ▶ Step 3: Fact-Checker iteration 1
+[2026-02-09T14:19:27+00:00] ✓ Fact-check 1: passed=True, issues=0
+[2026-02-09T14:19:27+00:00] ▶ Step 4: Style Polisher starting
+[2026-02-09T14:19:40+00:00] ✓ Pipeline complete – status=DONE
+[2026-02-09T14:20:19+00:00] 🚀 Starting LinkedIn Pack generation (Pipeline B)
+[2026-02-09T14:20:19+00:00] Crew built (LinkedInPackCrew with Groq/llama-3.1-8b-instant)
+[2026-02-09T14:20:19+00:00] ▶ Running LinkedIn Pack crew (3 agents, sequential)
+[2026-02-09T14:20:19+00:00]    → Step 1: Claims Agent
+[2026-02-09T14:20:19+00:00]    → Step 2: LinkedIn Post Agent
+[2026-02-09T14:20:19+00:00]    → Step 3: Image Prompt Agent
+[2026-02-09T14:20:21+00:00] ✓ Crew execution complete, extracting results...
+[2026-02-09T14:20:21+00:00] Number of tasks: 3
+[2026-02-09T14:20:21+00:00] Task 0 output type: <class 'crewai.tasks.task_output.TaskOutput'>
+[2026-02-09T14:20:21+00:00] Task 0 output hasattr raw: True
+[2026-02-09T14:20:21+00:00] Claims raw output: ## Final Analysis and Compliance Assessment
+
+### Safe Claims
+
+✅ SAFE CLAIMS - Statements directly supported by blog content
+
+*   We are implementing a comprehensive Dark Mode feature across our applic...
+[2026-02-09T14:20:21+00:00] ✓ Claims check: 9 safe, 7 risky (MEDIUM_RISK)
+[2026-02-09T14:20:21+00:00] 💼 LinkedIn pack updated: claims_check
+[2026-02-09T14:20:21+00:00] ✓ Parsing LinkedIn post output...
+[2026-02-09T14:20:21+00:00] Task 1 output type: <class 'crewai.tasks.task_output.TaskOutput'>
+[2026-02-09T14:20:21+00:00] Task 1 output dir: ['agent', 'construct', 'copy', 'description', 'dict', 'expected_output', 'from_orm', 'json', 'json_dict', 'messages', 'model_computed_fields', 'model_config', 'model_construct', 'model_copy', 'model_dump', 'model_dump_json', 'model_extra', 'model_fields', 'model_fields_set', 'model_json_schema', 'model_parametrized_name', 'model_post_init', 'model_rebuild', 'model_validate', 'model_validate_json', 'model_validate_strings', 'name', 'output_format', 'parse_file', 'parse_obj', 'parse_raw', 'pydantic', 'raw', 'schema', 'schema_json', 'set_summary', 'summary', 'to_dict', 'update_forward_refs', 'validate']
+[2026-02-09T14:20:21+00:00] Task 1 output hasattr raw: True
+[2026-02-09T14:20:21+00:00] Task 1 output hasattr json_dict: True
+[2026-02-09T14:20:21+00:00] Task 1 output hasattr pydantic: True
+[2026-02-09T14:20:21+00:00] LinkedIn output has json_dict: None
+[2026-02-09T14:20:21+00:00] LinkedIn parsed dict: None
+[2026-02-09T14:20:21+00:00] LinkedIn dict type: <class 'NoneType'>
+[2026-02-09T14:20:21+00:00] ⚠ LinkedIn post parsing failed - dict is None or missing post_text key
+[2026-02-09T14:20:21+00:00] ✓ LinkedIn post created (0 words, 0 hashtags)
+[2026-02-09T14:20:21+00:00] 💼 LinkedIn pack updated: linkedin_post
+[2026-02-09T14:20:21+00:00] ✓ Parsing image prompt output...
+[2026-02-09T14:20:21+00:00] Image prompt raw output: ## Optimized Prompt for Marketing Image
+
+```json
+{
+  "prompt": "A futuristic, minimalist software development workspace with a large screen displaying a Dark Mode interface, soft blue and purple light...
+[2026-02-09T14:20:21+00:00] ✓ Image prompt generated for SDXL-Lightning
+[2026-02-09T14:20:21+00:00] 💼 LinkedIn pack updated: image_prompt
+[2026-02-09T14:20:21+00:00] ✅ LinkedIn Pack generation complete!
+[2026-02-09T14:20:21+00:00]    → Claims: MEDIUM_RISK
+[2026-02-09T14:20:21+00:00]    → Post: 0 words
+[2026-02-09T14:20:21+00:00]    → Image prompt ready for SDXL-Lightning
+[2026-02-09T14:20:36+00:00] 🎨 Generating image with Leonardo AI...
+[2026-02-09T14:20:36+00:00] Prompt: A futuristic, minimalist software development workspace with a large screen displaying a Dark Mode i...
+[2026-02-09T14:20:45+00:00] ✓ Image generated: 1 image(s)
+[2026-02-09T14:20:45+00:00] 💼 LinkedIn pack updated: generated_image

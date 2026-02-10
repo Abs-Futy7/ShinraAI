@@ -45,6 +45,48 @@ export interface RunSteps {
   final: { markdown: string } | null;
 }
 
+export interface RiskyClaim {
+  claim: string;
+  risk_type: string;
+  suggestion: string;
+}
+
+export interface ClaimsCheck {
+  safe_claims: string[];
+  risky_claims: RiskyClaim[];
+  overall_assessment: "LOW_RISK" | "MEDIUM_RISK" | "HIGH_RISK" | "UNKNOWN";
+}
+
+export interface LinkedInPost {
+  post_text: string;
+  hashtags: string[];
+  cta: string;
+  word_count: number;
+}
+
+export interface ImagePrompt {
+  prompt: string;
+  negative_prompt: string;
+  model_suggestion: string;
+  style_notes: string;
+}
+
+export interface GeneratedImage {
+  generation_id: string;
+  images: string[];
+  status: "success" | "failed";
+  result?: any;
+}
+
+export interface LinkedInPack {
+  claims_check: ClaimsCheck;
+  linkedin_post: LinkedInPost;
+  image_prompt: ImagePrompt;
+  generated_image?: GeneratedImage;
+  status: string;
+  assessment: string;
+}
+
 export interface RunState {
   run_id: string;
   inputs: {
@@ -58,6 +100,7 @@ export interface RunState {
   };
   steps: RunSteps;
   citations: Citation[];
+  linkedin_pack?: LinkedInPack;
   status: string;
   error: string | null;
   logs: string[];

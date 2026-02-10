@@ -14,7 +14,7 @@ interface Props {
 const statusStyles: Record<string, { dot: string; border: string; bg: string }> = {
   pending: { dot: "bg-gray-300", border: "border-gray-200", bg: "bg-white" },
   active:  { dot: "bg-blue-500 animate-pulse", border: "border-blue-200", bg: "bg-blue-50" },
-  done:    { dot: "bg-green-500", border: "border-green-200", bg: "bg-white" },
+  done:    { dot: "bg-green-500", border: "border-green-700 border-2", bg: "bg-white" },
 };
 
 export default function StepCard({ step, title, status, children, onFeedback, canEdit = false }: Props) {
@@ -30,10 +30,10 @@ export default function StepCard({ step, title, status, children, onFeedback, ca
         className="w-full flex items-center gap-3 px-4 py-3 text-left"
       >
         <span className={`w-3 h-3 rounded-full ${s.dot} flex-shrink-0`} />
-        <span className="font-medium text-sm text-gray-800">
-          Step {step}: {title}
+        <span className="font-bold text-md text-gray-800">
+          Step {step}: {title} Agent
         </span>
-        <span className="ml-auto text-xs text-gray-400">
+        <span className="ml-auto text-sm text-gray-400">
           {status === "active" ? "Running…" : status === "done" ? "Complete" : "Waiting"}
         </span>
         {showFeedbackButton && (
@@ -42,7 +42,7 @@ export default function StepCard({ step, title, status, children, onFeedback, ca
               e.stopPropagation();
               onFeedback();
             }}
-            className="px-3 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-medium transition flex items-center gap-1"
+            className="px-3 py-1 bg-brand-600 hover:bg-brand-700 text-gray-700 rounded text-xs font-medium transition flex items-center gap-1"
           >
             ✏️ Edit
           </button>

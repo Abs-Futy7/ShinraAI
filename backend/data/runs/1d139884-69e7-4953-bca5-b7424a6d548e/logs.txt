@@ -1,0 +1,39 @@
+[2026-02-09T13:32:56+00:00] Run initialised
+[2026-02-09T13:33:01+00:00] ✓ Web search enabled (SerperDevTool with gemini/gemini-2.5-flash)
+[2026-02-09T13:33:01+00:00] Crew built (PrdBlogCrew with gemini/gemini-2.5-flash)
+[2026-02-09T13:33:01+00:00] ▶ Step 1: Researcher starting
+[2026-02-09T13:33:05+00:00] ✓ Research done – 1 sources found
+[2026-02-09T13:33:05+00:00] ▶ Step 2: Writer iteration 1
+[2026-02-09T13:33:11+00:00] ✓ Draft 1 written (1371 chars)
+[2026-02-09T13:33:11+00:00] ▶ Step 3: Fact-Checker iteration 1
+[2026-02-09T13:33:16+00:00] ✓ Fact-check 1: passed=True, issues=0
+[2026-02-09T13:33:16+00:00] ▶ Step 4: Style Polisher starting
+[2026-02-09T13:33:24+00:00] ✓ Pipeline complete – status=DONE
+[2026-02-09T13:33:47+00:00] 🚀 Starting LinkedIn Pack generation (Pipeline B)
+[2026-02-09T13:33:47+00:00] Crew built (LinkedInPackCrew with Groq/llama-3.1-8b-instant)
+[2026-02-09T13:33:47+00:00] ▶ Running LinkedIn Pack crew (3 agents, sequential)
+[2026-02-09T13:33:47+00:00]    → Step 1: Claims Agent
+[2026-02-09T13:33:47+00:00]    → Step 2: LinkedIn Post Agent
+[2026-02-09T13:33:47+00:00]    → Step 3: Image Prompt Agent
+[2026-02-09T13:33:50+00:00] ✓ Crew execution complete, extracting results...
+[2026-02-09T13:33:50+00:00] Claims raw output: {
+  "safe_claims": [
+    "The implementation of a comprehensive Dark Mode feature across our entire application is underway",
+    "Our Dark Mode solution will integrate several key technical capabilit...
+[2026-02-09T13:33:50+00:00] ✓ Claims check: 4 safe, 7 risky (MEDIUM_RISK)
+[2026-02-09T13:33:50+00:00] 💼 LinkedIn pack updated: claims_check
+[2026-02-09T13:33:50+00:00] ✓ Parsing LinkedIn post output...
+[2026-02-09T13:33:50+00:00] LinkedIn raw output: {
+  "post_text": "Exciting news! We're implementing a comprehensive Dark Mode feature across our entire application. This strategic enhancement aims to improve the user experience in several ways. Her...
+[2026-02-09T13:33:50+00:00] ⚠ LinkedIn post parsing failed
+[2026-02-09T13:33:50+00:00] ✓ LinkedIn post created (0 words, 0 hashtags)
+[2026-02-09T13:33:50+00:00] 💼 LinkedIn pack updated: linkedin_post
+[2026-02-09T13:33:50+00:00] ✓ Parsing image prompt output...
+[2026-02-09T13:33:50+00:00] Image prompt raw output: {
+  "prompt": "A modern, minimalist software development workspace with a large screen showing a Dark Mode interface, soft blue and dark gray color scheme, professional photography style, clean compos...
+[2026-02-09T13:33:50+00:00] ✓ Image prompt generated for SDXL-Lightning
+[2026-02-09T13:33:50+00:00] 💼 LinkedIn pack updated: image_prompt
+[2026-02-09T13:33:50+00:00] ✅ LinkedIn Pack generation complete!
+[2026-02-09T13:33:50+00:00]    → Claims: MEDIUM_RISK
+[2026-02-09T13:33:50+00:00]    → Post: 0 words
+[2026-02-09T13:33:50+00:00]    → Image prompt ready for SDXL-Lightning
