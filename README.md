@@ -127,6 +127,59 @@ Storage
 7. User can submit stage feedback via `POST /runs/{run_id}/feedback`.
 8. After completion, user can download markdown, export PDF, or run Pipeline B.
 
+
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/ShinraAI%20%E2%80%93%20PRD%20%E2%86%92%20Blog%20Agent%20Pipeline.png" width="100%" alt="Shinrai main interface overview" />
+</p>
+<p align="center"><em>Main Shinrai interface for PRD input and run configuration.</em></p>
+
+<p align="center">
+  <img src="screenshots/agent-workflow1.png" width="100%" alt="Pipeline run timeline - step progression view" />
+</p>
+<p align="center"><em>Run timeline showing the multi-agent flow and stage-by-stage progression.</em></p>
+
+<p align="center">
+  <img src="screenshots/agent-workflow2.png" width="100%" alt="Pipeline run timeline - expanded stage details" />
+</p>
+<p align="center"><em>Expanded timeline panels with detailed per-step outputs.</em></p>
+
+<p align="center">
+  <img src="screenshots/caption-agent.png" width="100%" alt="LinkedIn caption generation stage" />
+</p>
+<p align="center"><em>LinkedIn caption generation output from Pipeline B.</em></p>
+
+<p align="center">
+  <img src="screenshots/claim-agent.png" width="100%" alt="Claims analysis stage output" />
+</p>
+<p align="center"><em>Claims analysis stage highlighting safe and risky claims.</em></p>
+
+<p align="center">
+  <img src="screenshots/final-blog-post.png" width="100%" alt="Final blog post output with citations" />
+</p>
+<p align="center"><em>Final polished blog post with inline citation markers.</em></p>
+
+<p align="center">
+  <img src="screenshots/image-generation-agent.png" width="100%" alt="Image generation output view" />
+</p>
+<p align="center"><em>Image generation stage using the generated marketing prompt.</em></p>
+
+<p align="center">
+  <img src="screenshots/pipeline-dashboard.png" width="100%" alt="Operations dashboard with runs and metrics" />
+</p>
+<p align="center"><em>Operations dashboard showing throughput, reliability, token usage, and quality metrics.</em></p>
+
+<p align="center">
+  <img src="screenshots/supabase-run-logs.png" width="100%" alt="Supabase run logs table" />
+</p>
+<p align="center"><em>Supabase `run_logs` records for timeline and debugging observability.</em></p>
+
+<p align="center">
+  <img src="screenshots/supabase_llmcalls.png" width="100%" alt="Supabase llm calls table with token usage and latency" />
+</p>
+<p align="center"><em>Supabase `llm_calls` metrics including prompt/completion/total tokens and latency.</em></p>
+
 ## API Surface
 
 Defined in `backend/app/main.py` and `backend/app/routes/metrics.py`.
@@ -877,57 +930,7 @@ Rubric scoring is executed after style polishing in `backend/app/services/orches
   - `rubric_passed`
   - `rubric_review_required`
 
-## Screenshots
 
-<p align="center">
-  <img src="screenshots/ShinraAI%20%E2%80%93%20PRD%20%E2%86%92%20Blog%20Agent%20Pipeline.png" width="100%" alt="Shinrai main interface overview" />
-</p>
-<p align="center"><em>Main Shinrai interface for PRD input and run configuration.</em></p>
-
-<p align="center">
-  <img src="screenshots/agent-workflow1.png" width="100%" alt="Pipeline run timeline - step progression view" />
-</p>
-<p align="center"><em>Run timeline showing the multi-agent flow and stage-by-stage progression.</em></p>
-
-<p align="center">
-  <img src="screenshots/agent-workflow2.png" width="100%" alt="Pipeline run timeline - expanded stage details" />
-</p>
-<p align="center"><em>Expanded timeline panels with detailed per-step outputs.</em></p>
-
-<p align="center">
-  <img src="screenshots/caption-agent.png" width="100%" alt="LinkedIn caption generation stage" />
-</p>
-<p align="center"><em>LinkedIn caption generation output from Pipeline B.</em></p>
-
-<p align="center">
-  <img src="screenshots/claim-agent.png" width="100%" alt="Claims analysis stage output" />
-</p>
-<p align="center"><em>Claims analysis stage highlighting safe and risky claims.</em></p>
-
-<p align="center">
-  <img src="screenshots/final-blog-post.png" width="100%" alt="Final blog post output with citations" />
-</p>
-<p align="center"><em>Final polished blog post with inline citation markers.</em></p>
-
-<p align="center">
-  <img src="screenshots/image-generation-agent.png" width="100%" alt="Image generation output view" />
-</p>
-<p align="center"><em>Image generation stage using the generated marketing prompt.</em></p>
-
-<p align="center">
-  <img src="screenshots/pipeline-dashboard.png" width="100%" alt="Operations dashboard with runs and metrics" />
-</p>
-<p align="center"><em>Operations dashboard showing throughput, reliability, token usage, and quality metrics.</em></p>
-
-<p align="center">
-  <img src="screenshots/supabase-run-logs.png" width="100%" alt="Supabase run logs table" />
-</p>
-<p align="center"><em>Supabase `run_logs` records for timeline and debugging observability.</em></p>
-
-<p align="center">
-  <img src="screenshots/supabase_llmcalls.png" width="100%" alt="Supabase llm calls table with token usage and latency" />
-</p>
-<p align="center"><em>Supabase `llm_calls` metrics including prompt/completion/total tokens and latency.</em></p>
 
 ## Frontend Experience
 
