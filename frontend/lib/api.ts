@@ -1,4 +1,11 @@
-import type { CreateRunRequest, RunState, LinkedInPack, GeneratedImage } from "./types";
+import type {
+  CreateRunRequest,
+  RunState,
+  LinkedInPack,
+  GeneratedImage,
+  MetricsSummaryResponse,
+  MetricsRun,
+} from "./types";
 
 const API_BASE = "/api/backend";
 
@@ -51,6 +58,14 @@ export async function downloadPdf(runId: string): Promise<Blob> {
     throw new Error(`PDF export failed (${res.status}): ${body}`);
   }
   return res.blob();
+}
+
+export async function getMetricsSummary(): Promise<MetricsSummaryResponse> {
+  return apiFetch("/metrics/summary");
+}
+
+export async function getMetricsRuns(limit = 50): Promise<MetricsRun[]> {
+  return apiFetch(`/metrics/runs?limit=${encodeURIComponent(String(limit))}`);
 }
 
 export function triggerPdfDownload(runId: string, blob: Blob) {
