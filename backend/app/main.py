@@ -15,6 +15,9 @@ import os
 
 load_dotenv()
 
+from app.db import close_db, init_db, is_db_ready           # noqa: E402
+from app.routes.metrics import router as metrics_router      # noqa: E402
+from app.services.run_repo import RunRepo                    # noqa: E402
 from app.services.run_store import RunStore              # noqa: E402
 from app.services.orchestrator import run_pipeline        # noqa: E402
 from app.utils.file_upload import (                       # noqa: E402
@@ -66,7 +69,11 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "runs"
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    yield
+    await init_db()
+    try:
+        yield
+    finally:
+        await close_db()
 
 app = FastAPI(title="PRD → Blog Agent Pipeline", version="0.1.0", lifespan=lifespan)
 
@@ -77,8 +84,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(metrics_router)
 
 store = RunStore(DATA_DIR)
+run_repo = RunRepo()
 
 # ---------------------------------------------------------------------------
 # Routes
@@ -131,7 +140,22 @@ async def upload_file(file: UploadFile = File(...)):
 @app.post("/runs", response_model=CreateRunResponse)
 async def create_run(req: CreateRunRequest):
     run_id = str(uuid.uuid4())
-    store.init_run(run_id, req.model_dump())
+    payload = req.model_dump()
+    store.init_run(run_id, payload)
+
+    if is_db_ready():
+        try:
+            await run_repo.create_run(
+                run_id=run_id,
+                inputs=payload,
+                model_provider=payload.get("model_provider"),
+                model_name=payload.get("model_name"),
+                use_web_search=bool(payload.get("use_web_search", False)),
+            )
+            await run_repo.log(run_id, "Run initialised")
+        except Exception as exc:
+            store.log(run_id, f"⚠ DB create_run failed: {str(exc)}")
+
     return CreateRunResponse(run_id=run_id)
 
 
@@ -143,10 +167,21 @@ async def execute_run(run_id: str):
     if state.get("status") in ("RUNNING",):
         raise HTTPException(409, "Run already in progress")
     try:
-        result = await run_pipeline(run_id, state, store)
+        result = await run_pipeline(
+            run_id,
+            state,
+            store,
+            repo=run_repo if is_db_ready() else None,
+        )
         return result
     except Exception as exc:
         store.set_status(run_id, "ERROR", error=str(exc))
+        if is_db_ready():
+            try:
+                await run_repo.set_status(run_id, "ERROR", error=str(exc))
+                await run_repo.log(run_id, f"Execution failed: {str(exc)}", level="error")
+            except Exception as db_exc:
+                store.log(run_id, f"⚠ DB status update failed: {str(db_exc)}")
         raise HTTPException(500, detail=str(exc))
 
 
@@ -179,10 +214,23 @@ async def submit_feedback(run_id: str, req: SubmitFeedbackRequest):
         store.add_feedback(run_id, req.stage, req.feedback)
         
         # Re-run from the specified stage
-        result = await run_pipeline_with_feedback(run_id, state, store, req.stage, req.feedback)
+        result = await run_pipeline_with_feedback(
+            run_id,
+            state,
+            store,
+            req.stage,
+            req.feedback,
+            repo=run_repo if is_db_ready() else None,
+        )
         return result
     except Exception as exc:
         store.set_status(run_id, "ERROR", error=str(exc))
+        if is_db_ready():
+            try:
+                await run_repo.set_status(run_id, "ERROR", error=str(exc))
+                await run_repo.log(run_id, f"Feedback execution failed: {str(exc)}", level="error")
+            except Exception as db_exc:
+                store.log(run_id, f"⚠ DB status update failed: {str(db_exc)}")
         raise HTTPException(500, detail=str(exc))
 
 

@@ -1,0 +1,33 @@
+[2026-02-19T16:32:03+00:00] Run initialised
+[2026-02-19T16:32:09+00:00] Web search enabled (SerperDevTool with gemini/gemini-2.5-flash)
+[2026-02-19T16:32:09+00:00] Crew built (PrdBlogCrew with gemini/gemini-2.5-flash)
+[2026-02-19T16:32:10+00:00] Step 1: Researcher starting
+[2026-02-19T16:32:22+00:00] Research done - 4 sources found
+[2026-02-19T16:32:22+00:00] Step 2: Writer iteration 1
+[2026-02-19T16:32:30+00:00] Draft 1 written (1690 chars)
+[2026-02-19T16:32:30+00:00] Step 3: Fact-checker iteration 1
+[2026-02-19T16:32:38+00:00] Fact-check 1: passed=True, issues=0
+[2026-02-19T16:32:39+00:00] Step 4: Style polisher starting
+[2026-02-19T16:32:48+00:00] Pipeline complete - status=DONE
+[2026-02-19T16:36:33+00:00] 🚀 Starting LinkedIn Pack generation (Pipeline B)
+[2026-02-19T16:36:33+00:00] Crew built (LinkedInPackCrew with Groq/llama-3.1-8b-instant)
+[2026-02-19T16:36:33+00:00] ▶ Running LinkedIn Pack crew (3 agents, sequential)
+[2026-02-19T16:36:33+00:00]    → Step 1: Claims Agent
+[2026-02-19T16:36:33+00:00]    → Step 2: LinkedIn Post Agent
+[2026-02-19T16:36:33+00:00]    → Step 3: Image Prompt Agent
+[2026-02-19T16:36:35+00:00] ✓ Crew execution complete, extracting results...
+[2026-02-19T16:36:35+00:00] Number of tasks: 3
+[2026-02-19T16:36:35+00:00] ✓ Claims check: 6 safe, 4 risky (MEDIUM_RISK)
+[2026-02-19T16:36:35+00:00] 💼 LinkedIn pack updated: claims_check
+[2026-02-19T16:36:35+00:00] ✓ Parsing LinkedIn post output...
+[2026-02-19T16:36:35+00:00] ✓ LinkedIn post parsed from pydantic (157 words)
+[2026-02-19T16:36:35+00:00] ✓ LinkedIn post parsed successfully with 865 chars
+[2026-02-19T16:36:35+00:00] ✓ LinkedIn post created (157 words, 5 hashtags)
+[2026-02-19T16:36:35+00:00] 💼 LinkedIn pack updated: linkedin_post
+[2026-02-19T16:36:35+00:00] ✓ Parsing image prompt output...
+[2026-02-19T16:36:35+00:00] ✓ Image prompt generated for SDXL-Lightning
+[2026-02-19T16:36:35+00:00] 💼 LinkedIn pack updated: image_prompt
+[2026-02-19T16:36:35+00:00] ✅ LinkedIn Pack generation complete!
+[2026-02-19T16:36:35+00:00]    → Claims: MEDIUM_RISK
+[2026-02-19T16:36:35+00:00]    → Post: 157 words
+[2026-02-19T16:36:35+00:00]    → Image prompt ready for SDXL-Lightning

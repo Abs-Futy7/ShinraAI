@@ -33,9 +33,11 @@ class RunStore:
                 "drafts": [],
                 "fact_checks": [],
                 "final": None,
+                "rubric": None,
             },
             "citations": [],
             "feedback": [],  # Track user feedback for each stage
+            "quality_gate": None,
             "status": "PENDING",
             "error": None,
             "logs": [],

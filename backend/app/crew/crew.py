@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 import yaml
 from crewai import Agent, Crew, Task, LLM, Process
@@ -113,16 +114,20 @@ class PrdBlogCrew:
     def __init__(self, model_override: str | None = None):
         """Initialize crew with optional model override."""
         self.model_override = model_override
+        self.research_tools: list[Any] = []
 
     # ── Agents ───────────────────────────────────────────────────────────
 
     @agent
     def researcher(self) -> Agent:
-        return Agent(
+        agent = Agent(
             config=self.agents_config["researcher"],  # type: ignore[index]
             llm=_get_llm(0.5, self.model_override),
             allow_delegation=False,
         )
+        if self.research_tools:
+            agent.tools = list(self.research_tools)
+        return agent
 
     @agent
     def writer(self) -> Agent:
@@ -189,7 +194,7 @@ class PrdBlogCrew:
     # The orchestrator needs to run steps individually for the fact-check
     # loop, so we build a one-task Crew and kickoff with variable inputs.
 
-    def kickoff_step(self, task_key: str, inputs: dict, retry_count: int = 0) -> str:
+    def kickoff_step(self, task_key: str, inputs: dict, retry_count: int = 0) -> Any:
         """Run a single task identified by its YAML key with model fallback on rate limits."""
         # Load raw YAML config directly
         tasks_yaml = _load_yaml("tasks.yaml")
@@ -218,7 +223,7 @@ class PrdBlogCrew:
         
         try:
             result = mini_crew.kickoff(inputs=inputs)
-            return str(result)
+            return result
         except Exception as e:
             error_str = str(e).lower()
             # Check if it's a rate limit error

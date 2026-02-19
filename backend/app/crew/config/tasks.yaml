@@ -1,9 +1,24 @@
 research_task:
   description: >
     PRD: {prd}
-    
-    Return JSON:
-    {{"queries": ["q1"], "sources": [{{"id": "S0", "title": "PRD", "url": "internal://prd", "key_facts": ["fact1"]}}], "summary_facts": ["f1"], "unknowns": []}}
+    {web_search_instructions}
+
+    Return STRICT JSON only (no prose, no markdown):
+    {{
+      "queries": ["q1", "q2"],
+      "sources": [
+        {{"id": "S0", "title": "PRD", "url": "internal://prd", "query": "internal", "key_facts": ["fact1"]}},
+        {{"id": "S1", "title": "External source title", "url": "https://...", "query": "query used", "key_facts": ["fact2"]}}
+      ],
+      "summary_facts": ["f1", "f2"],
+      "unknowns": []
+    }}
+
+    Rules:
+    - Always include S0 for the PRD.
+    - If web search is enabled, include at least 3 external sources (S1+), each with real http(s) URL.
+    - Keep source IDs unique (S0, S1, S2...).
+    - Every important claim should map to one or more source key_facts.
   expected_output: "JSON with sources array having id, title, url, key_facts"
   agent: researcher
 

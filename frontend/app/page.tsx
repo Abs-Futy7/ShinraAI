@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createRun } from "@/lib/api";
+import { setRunName } from "@/lib/runNames";
 import TemplateLibrary from "@/components/TemplateLibrary";
 import FileUpload from "@/components/FileUpload";
 import Features from "@/components/Features";
@@ -36,6 +37,7 @@ const MODEL_PROVIDERS = {
 
 export default function Home() {
   const router = useRouter();
+  const [runName, setRunNameInput] = useState("");
   const [prd, setPrd] = useState("");
   const [tone, setTone] = useState("professional");
   const [audience, setAudience] = useState("engineers");
@@ -92,6 +94,9 @@ export default function Home() {
         model_provider: modelProvider,
         model_name: modelName,
       });
+      if (runName.trim()) {
+        setRunName(run_id, runName);
+      }
       router.push(`/runs/${run_id}`);
     } catch (e: any) {
       setError(e.message || "Failed to create run");
@@ -130,6 +135,17 @@ export default function Home() {
           
           {/* PRD Input */}
           <div className="mb-8">
+            <label className="flex items-center gap-2 text-sm font-bold text-primary-800 uppercase tracking-wider mb-3">
+              Run Name (Optional)
+            </label>
+            <input
+              value={runName}
+              onChange={(e) => setRunNameInput(e.target.value)}
+              placeholder="e.g. Dark Mode Launch Blog"
+              maxLength={80}
+              className="w-full bg-paper border border-sage-200 rounded-lg px-4 py-3 text-sm text-primary-900 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-colors mb-5"
+            />
+
             <label className="flex items-center justify-between font-serif text-xl text-primary-900 mb-4">
               <span>Product Requirements</span>
               {uploadedFilename && (
