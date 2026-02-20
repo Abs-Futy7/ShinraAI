@@ -1,0 +1,131 @@
+[2026-02-20T14:27:51+00:00] Run initialised
+[2026-02-20T14:28:00+00:00] Web search enabled (SerperDevTool with gemini/gemini-2.5-flash)
+[2026-02-20T14:28:00+00:00] Crew built (PrdBlogCrew with gemini/gemini-2.5-flash)
+[2026-02-20T14:28:00+00:00] Step 1: Researcher starting
+[2026-02-20T14:28:26+00:00] Research done - 4 sources found
+[2026-02-20T14:28:26+00:00] Step 2: Writer iteration 1
+[2026-02-20T14:28:29+00:00] ERROR in write_task: Traceback (most recent call last):
+  File "E:\WebDev\Next\Shinrai\backend\app\services\orchestrator.py", line 1069, in _kickoff
+    result = await loop.run_in_executor(None, crew_instance.kickoff_step, task_key, inputs, 0)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "E:\WebDev\Next\Shinrai\backend\app\crew\crew.py", line 225, in kickoff_step
+    result = mini_crew.kickoff(inputs=inputs)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 743, in kickoff
+    result = self._run_sequential_process()
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 1150, in _run_sequential_process
+    return self._execute_tasks(self.tasks)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\crew.py", line 1236, in _execute_tasks
+    task_output = task.execute_sync(
+        agent=exec_data.agent,
+        context=context,
+        tools=exec_data.tools,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 499, in execute_sync
+    return self._execute_core(agent, context, tools)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 740, in _execute_core
+    raise e  # Re-raise the exception after emitting the event
+    ^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\task.py", line 671, in _execute_core
+    result = agent.execute_task(
+        task=self,
+        context=context,
+        tools=tools,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 493, in execute_task
+    result = self.execute_task(task, context, tools)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 493, in execute_task
+    result = self.execute_task(task, context, tools)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 492, in execute_task
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 459, in execute_task
+    result = self._execute_without_timeout(task_prompt, task)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agent\core.py", line 568, in _execute_without_timeout
+    return self.agent_executor.invoke(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        {
+        ^
+    ...<4 lines>...
+        }
+        ^
+    )["output"]
+    ^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 207, in invoke
+    formatted_answer = self._invoke_loop()
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 308, in _invoke_loop
+    return self._invoke_loop_react()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 442, in _invoke_loop_react
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\agents\crew_agent_executor.py", line 337, in _invoke_loop_react
+    answer = get_llm_response(
+        llm=self.llm,
+    ...<7 lines>...
+        verbose=self.agent.verbose,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\utilities\agent_utils.py", line 372, in get_llm_response
+    raise e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\utilities\agent_utils.py", line 362, in get_llm_response
+    answer = llm.call(
+        messages,
+    ...<5 lines>...
+        response_model=response_model,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llms\providers\gemini\completion.py", line 331, in call
+    return self._handle_completion(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        formatted_content,
+        ^^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+        effective_response_model,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llms\providers\gemini\completion.py", line 1110, in _handle_completion
+    raise e from e
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\crewai\llms\providers\gemini\completion.py", line 1099, in _handle_completion
+    response = self.client.models.generate_content(
+        model=self.model,
+        contents=contents_for_api,
+        config=config,
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\google\genai\models.py", line 5056, in generate_content
+    response = self._generate_content(
+        model=model, contents=contents, config=parsed_config
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\google\genai\models.py", line 3843, in _generate_content
+    response = self._api_client.request(
+        'post', path, request_dict, http_options
+    )
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\google\genai\_api_client.py", line 1331, in request
+    response = self._request(http_request, http_options, stream=False)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\google\genai\_api_client.py", line 1167, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\tenacity\__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\tenacity\__init__.py", line 371, in iter
+    result = action(retry_state)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\tenacity\__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ~~~~~~~~~~~~~~~~~^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\tenacity\__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Python313\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Python313\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\tenacity\__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\google\genai\_api_client.py", line 1144, in _request_once
+    errors.APIError.raise_for_response(response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "E:\WebDev\Next\Shinrai\backend\venv\Lib\site-packages\google\genai\errors.py", line 108, in raise_for_response
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 403 PERMISSION_DENIED. {'error': {'code': 403, 'message': 'Your API key was reported as leaked. Please use another API key.', 'status': 'PERMISSION_DENIED'}}
+

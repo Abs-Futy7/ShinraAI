@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
-import Link from "next/link";
+import AppHeader from "@/components/AppHeader";
 import "./globals.css";
 
 const fraunces = Fraunces({ 
@@ -24,25 +24,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
-      <body className="min-h-screen bg-paper text-ink font-sans selection:bg-primary/20 selection:text-primary-900 relative">
-
-        <header className="fixed top-0 left-0 right-0 z-50 bg-paper/80 backdrop-blur-md border-b border-primary/10">
-          <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="font-serif font-semibold text-2xl text-primary-600 tracking-tight flex items-center gap-2">
-               ShinraAI
-            </Link>
-            <div className="flex items-center gap-5">
-              <Link href="/runs" className="text-xs font-semibold tracking-widest uppercase text-primary-500 hover:text-primary-700">
-                Runs
-              </Link>
-              <Link href="/dashboard" className="text-xs font-semibold tracking-widest uppercase text-primary-500 hover:text-primary-700">
-                Dashboard
-              </Link>
-              <span className="text-xs font-medium tracking-widest uppercase text-primary-400">Agentic Editorial Pipeline</span>
-            </div>
-          </div>
-        </header>
-        <main className="max-w-6xl mx-auto px-6 pt-24 pb-12">{children}</main>
+      <body className="min-h-screen overflow-x-hidden bg-paper text-ink font-sans selection:bg-primary/20 selection:text-primary-900 relative">
+        <div className="pointer-events-none fixed inset-0 z-0">
+          <div className="absolute -top-28 right-[-100px] h-72 w-72 rounded-full bg-emerald-100/45 blur-3xl" />
+          <div className="absolute -bottom-32 left-[-110px] h-72 w-72 rounded-full bg-cyan-100/40 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_20%,rgba(16,185,129,0.08),transparent_36%),radial-gradient(circle_at_24%_82%,rgba(8,145,178,0.1),transparent_34%)]" />
+        </div>
+        <AppHeader />
+        <main className="relative z-10 max-w-6xl mx-auto px-6 pt-24 pb-12">{children}</main>
       </body>
     </html>
   );

@@ -5,10 +5,12 @@ import { useParams, useRouter } from "next/navigation";
 import { getRun, generateLinkedInPack, generateImage } from "@/lib/api";
 import type { RunState, LinkedInPack } from "@/lib/types";
 import LinkedInPackModal from "@/components/LinkedInPackModal";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 
 export default function LinkedInPackPage() {
   const { runId } = useParams<{ runId: string }>();
   const router = useRouter();
+  const { loading: authLoading, isAuthenticated } = useRequireAuth();
   const [state, setState] = useState<RunState | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
   const [status, setStatus] = useState<"loading" | "generating" | "done" | "error">("loading");
@@ -128,6 +130,7 @@ export default function LinkedInPackPage() {
   }, [runId, linkedInPack, fetchState]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     const init = async () => {
       const data = await fetchState();
       
@@ -148,7 +151,16 @@ export default function LinkedInPackPage() {
     };
     
     init();
-  }, [fetchState, startGeneration]);
+  }, [fetchState, startGeneration, isAuthenticated]);
+
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600" />
+        <span className="ml-3 text-sm text-gray-500">Checking session...</span>
+      </div>
+    );
+  }
 
   if (error && status === "error") {
     return (

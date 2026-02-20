@@ -1,0 +1,35 @@
+[2026-02-20T15:05:39+00:00] Run initialised
+[2026-02-20T15:05:48+00:00] Web search enabled (SerperDevTool with gemini/gemini-2.5-flash)
+[2026-02-20T15:05:49+00:00] Crew built (PrdBlogCrew with gemini/gemini-2.5-flash)
+[2026-02-20T15:05:49+00:00] Step 1: Researcher starting
+[2026-02-20T15:06:05+00:00] Research done - 4 sources found
+[2026-02-20T15:06:05+00:00] Step 2: Writer iteration 1
+[2026-02-20T15:06:13+00:00] Draft 1 written (1898 chars)
+[2026-02-20T15:06:14+00:00] Step 3: Fact-checker iteration 1
+[2026-02-20T15:06:22+00:00] Fact-check 1: passed=True, issues=0
+[2026-02-20T15:06:23+00:00] Step 4: Style polisher attempt 1
+[2026-02-20T15:06:35+00:00] Step 5: Rubric grader attempt 1
+[2026-02-20T15:06:49+00:00] Rubric: overall=5.00/5, passed=True, attempts=1
+[2026-02-20T15:06:50+00:00] Pipeline complete - status=DONE
+[2026-02-20T15:13:57+00:00] 🚀 Starting LinkedIn Pack generation (Pipeline B)
+[2026-02-20T15:13:57+00:00] Crew built (LinkedInPackCrew with Groq/llama-3.1-8b-instant)
+[2026-02-20T15:13:57+00:00] ▶ Running LinkedIn Pack crew (3 agents, sequential)
+[2026-02-20T15:13:57+00:00]    → Step 1: Claims Agent
+[2026-02-20T15:13:57+00:00]    → Step 2: LinkedIn Post Agent
+[2026-02-20T15:13:57+00:00]    → Step 3: Image Prompt Agent
+[2026-02-20T15:14:01+00:00] ✓ Crew execution complete, extracting results...
+[2026-02-20T15:14:01+00:00] Number of tasks: 3
+[2026-02-20T15:14:01+00:00] ✓ Claims check: 10 safe, 6 risky (MEDIUM_RISK)
+[2026-02-20T15:14:01+00:00] 💼 LinkedIn pack updated: claims_check
+[2026-02-20T15:14:01+00:00] ✓ Parsing LinkedIn post output...
+[2026-02-20T15:14:01+00:00] ✓ LinkedIn post parsed from pydantic (156 words)
+[2026-02-20T15:14:01+00:00] ✓ LinkedIn post parsed successfully with 740 chars
+[2026-02-20T15:14:01+00:00] ✓ LinkedIn post created (156 words, 5 hashtags)
+[2026-02-20T15:14:01+00:00] 💼 LinkedIn pack updated: linkedin_post
+[2026-02-20T15:14:01+00:00] ✓ Parsing image prompt output...
+[2026-02-20T15:14:01+00:00] ✓ Image prompt generated for SDXL-Lightning
+[2026-02-20T15:14:01+00:00] 💼 LinkedIn pack updated: image_prompt
+[2026-02-20T15:14:01+00:00] ✅ LinkedIn Pack generation complete!
+[2026-02-20T15:14:01+00:00]    → Claims: MEDIUM_RISK
+[2026-02-20T15:14:01+00:00]    → Post: 156 words
+[2026-02-20T15:14:01+00:00]    → Image prompt ready for SDXL-Lightning

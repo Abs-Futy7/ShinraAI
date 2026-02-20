@@ -24,9 +24,12 @@ class RunStore:
 
     # ── init ──────────────────────────────────────────────────────────────
 
-    def init_run(self, run_id: str, inputs: dict) -> dict:
+    def init_run(self, run_id: str, inputs: dict, user_id: str | None = None) -> dict:
+        created_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
         state = {
             "run_id": run_id,
+            "user_id": user_id,
+            "created_at": created_at,
             "inputs": inputs,
             "steps": {
                 "research": None,

@@ -1,75 +1,91 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, Search, PenTool, CheckCircle2 } from "lucide-react";
+import { LogIn, FileText, Search, RefreshCw, BarChart3, Share2 } from "lucide-react";
 
 const STEPS = [
   {
+    icon: LogIn,
+    stage: "Access",
+    title: "Authenticate",
+    description: "Sign in with Supabase Auth. Every run is tied to your user and protected by ownership checks."
+  },
+  {
     icon: FileText,
-    title: "Input Requirements",
-    description: "Paste your PRD or upload a document to set the context."
+    stage: "Input",
+    title: "Create a Run",
+    description: "In Studio, submit PRD, tone, audience, model route, and optional web-search settings."
   },
   {
     icon: Search,
-    title: "AI Research",
-    description: "Shinrai browses the web to gather facts and validate claims."
+    stage: "Execute",
+    title: "Pipeline A Executes",
+    description: "Research -> Writer -> Fact-Checker loop -> Style Polisher execute with per-step timeline logs."
   },
   {
-    icon: PenTool,
-    title: "Drafting",
-    description: "Content is generated with your specific tone and audience in mind."
+    icon: RefreshCw,
+    stage: "Gate",
+    title: "Quality Gate Applies",
+    description: "Rubric scoring checks clarity, correctness, and completeness. Failed outputs can rollback and retry."
   },
   {
-    icon: CheckCircle2,
-    title: "Review & Refine",
-    description: "Verify sources in the timeline and export your final content."
+    icon: BarChart3,
+    stage: "Observe",
+    title: "Monitor Reliability",
+    description: "Use /runs for per-run detail and /dashboard for aggregate token, latency, and quality metrics."
+  },
+  {
+    icon: Share2,
+    stage: "Deliver",
+    title: "Ship and Extend",
+    description: "Export the final blog, then optionally run LinkedIn pack and image generation downstream."
   }
 ];
 
 export default function HowItWorks() {
   return (
-    <div className="py-24 border-t border-sage-100/50">
-      <div className="text-center max-w-2xl mx-auto mb-20">
-        <h2 className="font-serif text-3xl text-primary-900 mb-4">
-          How It Works
-        </h2>
-        <p className="text-gray-500">
-          From raw requirements to polished, fact-checked content in minutes.
-        </p>
-      </div>
-
+    <section className="relative px-2 py-16 md:py-20">
       <div className="relative">
-        {/* Connecting Line (Desktop) */}
-        <div className="hidden lg:block absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-sage-200 to-transparent" />
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary-500">Workflow</p>
+          <h2 className="mt-3 font-serif text-4xl text-primary-900 md:text-5xl">How It Works</h2>
+          <p className="mt-4 text-sm text-gray-600 md:text-base">
+            A structured, inspectable pipeline from authenticated input to publish-ready output.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {STEPS.map((step, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.15, duration: 0.5 }}
-              className="relative flex flex-col items-center text-center group"
-            >
-              <div className="w-24 h-24 bg-white rounded-full border-4 border-paper shadow-xl shadow-sage-200/50 flex items-center justify-center text-primary-600 mb-8 relative z-10 group-hover:border-primary-100 group-hover:scale-105 transition-all duration-300">
-                <step.icon size={32} strokeWidth={1.5} />
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-bold border-4 border-paper">
-                  {index + 1}
+        <div className="relative mt-14">
+          <div className="pointer-events-none absolute left-0 right-0 top-11 hidden h-px bg-gradient-to-r from-transparent via-sage-300/90 to-transparent lg:block" />
+          <div className="pointer-events-none absolute left-0 right-0 top-[25.25rem] hidden h-px bg-gradient-to-r from-transparent via-sage-300/90 to-transparent lg:block" />
+          <div className="pointer-events-none absolute left-1/2 top-11 hidden h-[22.4rem] w-px -translate-x-1/2 bg-gradient-to-b from-sage-300/80 via-sage-300/30 to-sage-300/80 lg:block" />
+
+          <div className="grid grid-cols-1 gap-y-12 gap-x-5 md:grid-cols-2 lg:grid-cols-3">
+            {STEPS.map((step, index) => (
+              <motion.article
+                key={index}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.07, duration: 0.4 }}
+                className="group relative flex flex-col items-center text-center"
+              >
+                <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-full border border-sage-200 bg-white text-primary-600 shadow-[0_12px_24px_-16px_rgba(6,104,57,0.45)] transition duration-300 group-hover:-translate-y-1 group-hover:border-primary-200 group-hover:shadow-[0_16px_28px_-14px_rgba(6,104,57,0.52)]">
+                  <step.icon size={28} strokeWidth={1.8} />
+                  <span className="absolute -right-2 -top-2 inline-flex min-w-8 items-center justify-center rounded-full bg-primary-600 px-2 py-1 text-[11px] font-bold text-white">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                 </div>
-              </div>
-              
-              <h3 className="font-serif text-xl text-primary-900 mb-3">
-                {step.title}
-              </h3>
-              
-              <p className="text-sm text-gray-500 leading-relaxed max-w-[200px]">
-                {step.description}
-              </p>
-            </motion.div>
-          ))}
+
+                <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-500">{step.stage}</p>
+                <h3 className="mt-2 font-serif text-4xl leading-[1.15] text-primary-900">
+                  {step.title}
+                </h3>
+                <p className="mt-3 max-w-[20rem] text-sm leading-8 text-gray-600">{step.description}</p>
+              </motion.article>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

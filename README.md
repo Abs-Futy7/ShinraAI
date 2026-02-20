@@ -1,4 +1,4 @@
-# Shinrai
+﻿# Shinrai
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-14.2.15-000000?style=flat-square&logo=nextdotjs&logoColor=white)
@@ -38,12 +38,17 @@ Shinrai currently supports:
 - Pipeline A: PRD -> researched, cited, fact-checked, polished blog markdown
 - Pipeline B: LinkedIn pack generation (claims check, post, image prompt)
 - Optional Leonardo image generation
+- Rubric quality gate with rollback/retry behavior
+- Supabase Auth-backed ownership checks and profile-scoped access
 - Dual persistence:
   - local JSON run state/logs under `backend/data/runs`
   - Supabase/Postgres analytics tables when `DATABASE_URL` is configured
 - Operations pages:
+  - `/studio` for run creation and configuration
   - `/dashboard` for aggregate run metrics
   - `/runs` for run history and per-run metrics
+  - `/profile` for account/activity summary
+
 
 ## High-Level Architecture Diagram
 
@@ -78,8 +83,10 @@ Storage
 |- backend/
 |  |- app/
 |  |  |- main.py
+|  |  |- auth.py
 |  |  |- db.py
 |  |  |- database/schema.sql
+|  |  |- database/rls.sql
 |  |  |- routes/metrics.py
 |  |  |- crew/
 |  |  |  |- crew.py
@@ -101,14 +108,19 @@ Storage
 |- frontend/
 |  |- app/
 |  |  |- page.tsx
+|  |  |- auth/page.tsx
 |  |  |- dashboard/page.tsx
+|  |  |- profile/page.tsx
 |  |  |- runs/page.tsx
 |  |  |- runs/[runId]/page.tsx
 |  |  |- runs/[runId]/linkedin/page.tsx
+|  |  |- studio/page.tsx
 |  |- components/
 |  |- lib/
 |  |  |- api.ts
+|  |  |- supabase.ts
 |  |  |- types.ts
+|  |  |- useRequireAuth.ts
 |  |  |- runNames.ts
 |  |- next.config.js
 |  |- package.json
@@ -932,9 +944,16 @@ Rubric scoring is executed after style polishing in `backend/app/services/orches
 
 
 
+<p align="center">
+  <img src="screenshots/db-diagram.png" width="100%" alt="Database schema diagram" />
+</p>
+<p align="center"><em>Database relationship diagram for run, step, log, LLM call, and rubric entities.</em></p>
+
 ## Frontend Experience
 
-### Home (`frontend/app/page.tsx`)
+
+
+### Studio (`frontend/app/studio/page.tsx`)
 
 - PRD input
 - optional run name (UI-only localStorage)
@@ -942,6 +961,19 @@ Rubric scoring is executed after style polishing in `backend/app/services/orches
 - model provider + model selection
 - web search toggle (Gemini only)
 - template library + file upload
+
+### Auth (`frontend/app/auth/page.tsx`)
+
+- sign in
+- sign up
+- forgot password
+- password reset flow
+
+### Profile (`frontend/app/profile/page.tsx`)
+
+- authenticated account details
+- activity summary (runs/completion/last run)
+- sign-out action from profile and header menu
 
 ### Run Detail (`frontend/app/runs/[runId]/page.tsx`)
 
@@ -962,10 +994,10 @@ Rubric scoring is executed after style polishing in `backend/app/services/orches
 
 ### Dashboard (`frontend/app/dashboard/page.tsx`)
 
-- aggregate metric cards
+- redesigned KPI tiles and visual hierarchy
 - token and latency summaries
-- 14-day runs/errors chart
-- recent runs metrics table
+- improved 14-day runs/errors chart panel
+- upgraded recent runs metrics table
 
 ### LinkedIn Page (`frontend/app/runs/[runId]/linkedin/page.tsx`)
 
@@ -1013,6 +1045,8 @@ Key backend env vars:
 | `MODEL` | No | Default model override |
 | `SERPER_API_KEY` | For web search | Research web tool |
 | `DATABASE_URL` | For metrics DB mode | Supabase/Postgres connection |
+| `SUPABASE_URL` | Recommended | JWKS token verification fallback |
+| `SUPABASE_JWT_SECRET` | Optional | HS256 token verification |
 | `LEONARDO_API_KEY` | For image generation | Leonardo API |
 
 \* At least one provider family is required (Groq or Gemini).
@@ -1029,9 +1063,11 @@ npm run dev
 
 ```env
 BACKEND_URL=http://localhost:8000
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ## Security Note
 
 Do not commit real secrets. Keep real API keys in local/private `.env` files and use placeholders in `.env.example`.
+

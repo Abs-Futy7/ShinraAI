@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import Depends, FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
@@ -15,6 +15,7 @@ import os
 
 load_dotenv()
 
+from app.auth import get_user_id                            # noqa: E402
 from app.db import close_db, init_db, is_db_ready           # noqa: E402
 from app.routes.metrics import router as metrics_router      # noqa: E402
 from app.services.run_repo import RunRepo                    # noqa: E402
@@ -89,6 +90,14 @@ app.include_router(metrics_router)
 store = RunStore(DATA_DIR)
 run_repo = RunRepo()
 
+
+def _assert_run_owner(state: dict, user_id: str | None) -> None:
+    owner_id = state.get("user_id")
+    if not owner_id:
+        return
+    if not user_id or user_id != owner_id:
+        raise HTTPException(status_code=403, detail="You do not have access to this run")
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
@@ -138,16 +147,20 @@ async def upload_file(file: UploadFile = File(...)):
 
 
 @app.post("/runs", response_model=CreateRunResponse)
-async def create_run(req: CreateRunRequest):
+async def create_run(
+    req: CreateRunRequest,
+    user_id: str | None = Depends(get_user_id),
+):
     run_id = str(uuid.uuid4())
     payload = req.model_dump()
-    store.init_run(run_id, payload)
+    store.init_run(run_id, payload, user_id=user_id)
 
     if is_db_ready():
         try:
             await run_repo.create_run(
                 run_id=run_id,
                 inputs=payload,
+                user_id=user_id,
                 model_provider=payload.get("model_provider"),
                 model_name=payload.get("model_name"),
                 use_web_search=bool(payload.get("use_web_search", False)),
@@ -160,10 +173,14 @@ async def create_run(req: CreateRunRequest):
 
 
 @app.post("/runs/{run_id}/execute")
-async def execute_run(run_id: str):
+async def execute_run(
+    run_id: str,
+    user_id: str | None = Depends(get_user_id),
+):
     state = store.load(run_id)
     if state is None:
         raise HTTPException(404, "Run not found")
+    _assert_run_owner(state, user_id)
     if state.get("status") in ("RUNNING",):
         raise HTTPException(409, "Run already in progress")
     try:
@@ -186,7 +203,11 @@ async def execute_run(run_id: str):
 
 
 @app.post("/runs/{run_id}/feedback")
-async def submit_feedback(run_id: str, req: SubmitFeedbackRequest):
+async def submit_feedback(
+    run_id: str,
+    req: SubmitFeedbackRequest,
+    user_id: str | None = Depends(get_user_id),
+):
     """
     Submit feedback for a specific stage and re-run from that point forward.
     
@@ -199,6 +220,7 @@ async def submit_feedback(run_id: str, req: SubmitFeedbackRequest):
     state = store.load(run_id)
     if state is None:
         raise HTTPException(404, "Run not found")
+    _assert_run_owner(state, user_id)
     if state.get("status") in ("RUNNING",):
         raise HTTPException(409, "Run already in progress")
     
@@ -235,7 +257,10 @@ async def submit_feedback(run_id: str, req: SubmitFeedbackRequest):
 
 
 @app.post("/runs/{run_id}/linkedin-pack")
-async def generate_linkedin_pack(run_id: str):
+async def generate_linkedin_pack(
+    run_id: str,
+    user_id: str | None = Depends(get_user_id),
+):
     """
     Generate LinkedIn Pack (Pipeline B) - Optional post-blog content generation.
     
@@ -249,6 +274,7 @@ async def generate_linkedin_pack(run_id: str):
     state = store.load(run_id)
     if state is None:
         raise HTTPException(404, "Run not found")
+    _assert_run_owner(state, user_id)
     
     # Check Pipeline A is complete
     status = state.get("status")
@@ -277,7 +303,10 @@ async def generate_linkedin_pack(run_id: str):
 
 
 @app.post("/runs/{run_id}/generate-image")
-async def generate_linkedin_image(run_id: str):
+async def generate_linkedin_image(
+    run_id: str,
+    user_id: str | None = Depends(get_user_id),
+):
     """
     Generate image using Leonardo AI based on the image prompt from LinkedIn Pack.
     
@@ -291,6 +320,7 @@ async def generate_linkedin_image(run_id: str):
     state = store.load(run_id)
     if state is None:
         raise HTTPException(404, "Run not found")
+    _assert_run_owner(state, user_id)
     
     # Check if linkedin_pack exists
     linkedin_pack = state.get("linkedin_pack")
@@ -341,15 +371,22 @@ async def generate_linkedin_image(run_id: str):
 
 
 @app.get("/runs/{run_id}")
-async def get_run(run_id: str):
+async def get_run(
+    run_id: str,
+    user_id: str | None = Depends(get_user_id),
+):
     state = store.load(run_id)
     if state is None:
         raise HTTPException(404, "Run not found")
+    _assert_run_owner(state, user_id)
     return state
 
 
 @app.get("/runs/{run_id}/export/pdf")
-async def export_pdf(run_id: str):
+async def export_pdf(
+    run_id: str,
+    user_id: str | None = Depends(get_user_id),
+):
     """
     Generate and download PDF export of the final blog post
     with styled formatting and preserved citations
@@ -357,6 +394,7 @@ async def export_pdf(run_id: str):
     state = store.load(run_id)
     if state is None:
         raise HTTPException(404, "Run not found")
+    _assert_run_owner(state, user_id)
     
     # Check if pipeline is complete
     status = state.get("status")
