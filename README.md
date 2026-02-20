@@ -1,11 +1,11 @@
-# Shinrai
+# ShinraAI
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-14.2.15-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![CrewAI](https://img.shields.io/badge/CrewAI-0.80.0-ea4335?style=flat-square)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)
 
-Shinrai is a multi-agent content ops pipeline that turns PRDs into source-grounded, publishable blogs—backed by claim validation, iterative fact-check rewrites, and full observability (logs, metrics, token/cost).
+ShinraAI is a multi-agent content ops pipeline that turns PRDs into source-grounded, publishable blogs—backed by claim validation, iterative fact-check rewrites, and full observability (logs, metrics, token/cost).
 
 
 ## Contents
