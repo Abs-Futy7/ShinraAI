@@ -6,12 +6,26 @@ import type {
   MetricsSummaryResponse,
   MetricsRun,
 } from "./types";
+import { getSupabaseClientSafe } from "./supabase";
 
 const API_BASE = "/api/backend";
 
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  try {
+    const supabase = getSupabaseClientSafe();
+    if (!supabase) return {};
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const authHeaders = await getAuthHeaders();
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders, ...(init?.headers || {}) },
     ...init,
   });
   if (!res.ok) {
@@ -52,7 +66,10 @@ export async function generateImage(runId: string): Promise<GeneratedImage> {
 }
 
 export async function downloadPdf(runId: string): Promise<Blob> {
-  const res = await fetch(`${API_BASE}/runs/${runId}/export/pdf`);
+  const authHeaders = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}/runs/${runId}/export/pdf`, {
+    headers: authHeaders,
+  });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
     throw new Error(`PDF export failed (${res.status}): ${body}`);

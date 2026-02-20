@@ -18,18 +18,20 @@ class RunRepo:
         self,
         run_id: str,
         inputs: dict[str, Any],
+        user_id: Optional[str],
         model_provider: Optional[str],
         model_name: Optional[str],
         use_web_search: bool,
     ) -> None:
         q = """
         insert into public.runs
-        (id, status, inputs, model_provider, model_name, use_web_search, created_at, updated_at)
-        values ($1::uuid, 'PENDING', $2::jsonb, $3, $4, $5, now(), now())
+        (id, user_id, status, inputs, model_provider, model_name, use_web_search, created_at, updated_at)
+        values ($1::uuid, $2::uuid, 'PENDING', $3::jsonb, $4, $5, $6, now(), now())
         """
         await pool().execute(
             q,
             run_id,
+            user_id,
             _to_jsonb(inputs),
             model_provider,
             model_name,
@@ -170,17 +172,18 @@ class RunRepo:
             _to_jsonb(summary),
         )
 
-    async def metrics_summary(self) -> dict[str, Any]:
-        q1 = """
+    async def metrics_summary(self, user_id: Optional[str] = None) -> dict[str, Any]:
+        if user_id is None:
+            q1 = """
         select
             count(*) as total_runs,
             count(*) filter (where status in ('DONE', 'DONE_WITH_WARNINGS')) as completed_runs,
             round(avg(extract(epoch from (finished_at - started_at))) * 1000)::int as avg_duration_ms
         from public.runs
         """
-        row = await pool().fetchrow(q1)
+            row = await pool().fetchrow(q1)
 
-        q_llm = """
+            q_llm = """
         select
             coalesce(sum(prompt_tokens), 0)::bigint as prompt_tokens,
             coalesce(sum(completion_tokens), 0)::bigint as completion_tokens,
@@ -188,9 +191,9 @@ class RunRepo:
             round(avg(latency_ms))::int as avg_llm_latency_ms
         from public.llm_calls
         """
-        llm_row = await pool().fetchrow(q_llm)
+            llm_row = await pool().fetchrow(q_llm)
 
-        q_rubric = """
+            q_rubric = """
         select
             round(avg(overall_score), 2) as rubric_avg_overall,
             count(*)::int as rubric_scored_runs,
@@ -198,9 +201,9 @@ class RunRepo:
             round(100.0 * count(*) filter (where passed) / nullif(count(*), 0), 1) as rubric_pass_rate
         from public.run_rubrics
         """
-        rubric_row = await pool().fetchrow(q_rubric)
+            rubric_row = await pool().fetchrow(q_rubric)
 
-        q2 = """
+            q2 = """
         select
             date_trunc('day', created_at) as day,
             count(*) as runs,
@@ -210,7 +213,54 @@ class RunRepo:
         group by 1
         order by 1
         """
-        rows = await pool().fetch(q2)
+            rows = await pool().fetch(q2)
+        else:
+            q1 = """
+        select
+            count(*) as total_runs,
+            count(*) filter (where status in ('DONE', 'DONE_WITH_WARNINGS')) as completed_runs,
+            round(avg(extract(epoch from (finished_at - started_at))) * 1000)::int as avg_duration_ms
+        from public.runs
+        where user_id = $1::uuid
+        """
+            row = await pool().fetchrow(q1, user_id)
+
+            q_llm = """
+        select
+            coalesce(sum(c.prompt_tokens), 0)::bigint as prompt_tokens,
+            coalesce(sum(c.completion_tokens), 0)::bigint as completion_tokens,
+            coalesce(sum(c.total_tokens), 0)::bigint as total_tokens,
+            round(avg(c.latency_ms))::int as avg_llm_latency_ms
+        from public.llm_calls c
+        join public.runs r on r.id = c.run_id
+        where r.user_id = $1::uuid
+        """
+            llm_row = await pool().fetchrow(q_llm, user_id)
+
+            q_rubric = """
+        select
+            round(avg(rr.overall_score), 2) as rubric_avg_overall,
+            count(*)::int as rubric_scored_runs,
+            count(*) filter (where rr.passed)::int as rubric_passed_runs,
+            round(100.0 * count(*) filter (where rr.passed) / nullif(count(*), 0), 1) as rubric_pass_rate
+        from public.run_rubrics rr
+        join public.runs r on r.id = rr.run_id
+        where r.user_id = $1::uuid
+        """
+            rubric_row = await pool().fetchrow(q_rubric, user_id)
+
+            q2 = """
+        select
+            date_trunc('day', created_at) as day,
+            count(*) as runs,
+            count(*) filter (where status = 'ERROR') as errors
+        from public.runs
+        where created_at > now() - interval '14 days'
+          and user_id = $1::uuid
+        group by 1
+        order by 1
+        """
+            rows = await pool().fetch(q2, user_id)
 
         headline = dict(row) if row is not None else {}
         if llm_row is not None:
@@ -220,7 +270,7 @@ class RunRepo:
 
         return {"headline": headline, "daily": [dict(r) for r in rows]}
 
-    async def metrics_runs(self, limit: int = 50) -> list[dict[str, Any]]:
+    async def metrics_runs(self, limit: int = 50, user_id: Optional[str] = None) -> list[dict[str, Any]]:
         q = """
         select
             r.id,
@@ -244,11 +294,12 @@ class RunRepo:
         from public.runs r
         left join public.llm_calls c on c.run_id = r.id
         left join public.run_rubrics rr on rr.run_id = r.id
+        where ($2::uuid is null or r.user_id = $2::uuid)
         group by
             r.id, r.status, r.model_provider, r.model_name, r.use_web_search, r.created_at, r.started_at, r.finished_at,
             rr.clarity_score, rr.correctness_score, rr.completeness_score, rr.overall_score, rr.passed, rr.review_required
         order by r.created_at desc
         limit $1
         """
-        rows = await pool().fetch(q, limit)
+        rows = await pool().fetch(q, limit, user_id)
         return [dict(r) for r in rows]

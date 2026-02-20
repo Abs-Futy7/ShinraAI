@@ -72,3 +72,7 @@ create index if not exists idx_run_steps_run_id on public.run_steps(run_id);
 create index if not exists idx_llm_calls_run_id on public.llm_calls(run_id);
 create index if not exists idx_run_logs_run_id on public.run_logs(run_id);
 create index if not exists idx_run_rubrics_passed on public.run_rubrics(passed);
+create index if not exists idx_runs_user_id on public.runs(user_id);
+
+-- For Supabase Auth + RLS policies, run:
+-- backend/app/database/rls.sql

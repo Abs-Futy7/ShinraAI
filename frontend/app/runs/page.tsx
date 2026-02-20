@@ -6,6 +6,7 @@ import { RefreshCw } from "lucide-react";
 import { getMetricsRuns } from "@/lib/api";
 import type { MetricsRun } from "@/lib/types";
 import { getRunNames } from "@/lib/runNames";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 
 function formatMs(ms: number | null | undefined): string {
   if (!ms || ms <= 0) return "-";
@@ -45,6 +46,7 @@ function getStatusBadgeClass(status: string): string {
 }
 
 export default function RunsPage() {
+  const { loading: authLoading, isAuthenticated } = useRequireAuth();
   const [runs, setRuns] = useState<MetricsRun[]>([]);
   const [runNames, setRunNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -69,12 +71,13 @@ export default function RunsPage() {
   };
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     loadRuns();
     setRunNames(getRunNames());
     const onFocus = () => setRunNames(getRunNames());
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
-  }, []);
+  }, [isAuthenticated]);
 
   const filteredRuns = useMemo(() => {
     if (statusFilter === "ALL") return runs;
@@ -86,6 +89,15 @@ export default function RunsPage() {
     for (const run of runs) values.add(run.status);
     return Array.from(values);
   }, [runs]);
+
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600" />
+        <span className="ml-3 text-sm text-gray-500">Checking session...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

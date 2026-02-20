@@ -119,6 +119,7 @@ export interface LinkedInPack {
 
 export interface RunState {
   run_id: string;
+  user_id?: string | null;
   inputs: {
     prd: string;
     tone: string;

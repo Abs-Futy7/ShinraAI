@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { getRun, executeRun, downloadPdf, triggerPdfDownload, submitFeedback } from "@/lib/api";
 import { getRunName, setRunName } from "@/lib/runNames";
 import type { RunState } from "@/lib/types";
+import { useRequireAuth } from "@/lib/useRequireAuth";
 import Timeline from "@/components/Timeline";
 import MarkdownViewer from "@/components/MarkdownViewer";
 import FeedbackModal from "@/components/FeedbackModal";
@@ -18,6 +19,7 @@ function formatScore(value: number | null | undefined): string {
 export default function RunPage() {
   const { runId } = useParams<{ runId: string }>();
   const router = useRouter();
+  const { loading: authLoading, isAuthenticated } = useRequireAuth();
   const [state, setState] = useState<RunState | null>(null);
   const [error, setError] = useState("");
   const [executing, setExecuting] = useState(false);
@@ -53,6 +55,7 @@ export default function RunPage() {
 
   // On mount: fetch state, then execute if PENDING
   useEffect(() => {
+    if (!isAuthenticated) return;
     let cancelled = false;
     let pollTimer: ReturnType<typeof setInterval>;
 
@@ -109,7 +112,7 @@ export default function RunPage() {
       cancelled = true;
       if (pollTimer!) clearInterval(pollTimer);
     };
-  }, [runId, fetchState]);
+  }, [runId, fetchState, isAuthenticated]);
 
   const handleFeedbackClick = (stage: string, stageTitle: string) => {
     setFeedbackModal({ open: true, stage, stageTitle });
@@ -171,6 +174,15 @@ export default function RunPage() {
     setDisplayName(updated);
     setEditingName(false);
   };
+
+  if (authLoading || !isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600" />
+        <span className="ml-3 text-sm text-gray-500">Checking session...</span>
+      </div>
+    );
+  }
 
   if (error && !state) {
     return (
