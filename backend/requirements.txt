@@ -1,16 +1,16 @@
-fastapi==0.115.0
-uvicorn[standard]==0.30.6
-python-dotenv==1.0.1
-pydantic==2.9.2
-crewai[tools,google-genai]==0.80.0
-aiofiles==24.1.0
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic
+crewai[tools,google-genai]
+aiofiles
 litellm
-markdown==3.6
+markdown
 # Leonardo AI integration
-httpx==0.27.0
+httpx
 # PDF Export dependencies
-aspose-html-net==26.1.0
-pygments==2.18.0
+aspose-html-net
+pygments
 # OCR and image processing
 pytesseract
 pillow
@@ -18,3 +18,4 @@ pypdf
 easyocr
 asyncpg
 python-jose[cryptography]
+litellm[proxy]
