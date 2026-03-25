@@ -1039,6 +1039,9 @@ Source: `frontend/lib/api.ts`.
   - `getMetricsRuns`
 
 ## Setup
+## Setup
+
+---
 
 ### Backend
 
@@ -1049,7 +1052,7 @@ Source: `frontend/lib/api.ts`.
 cd backend
 
 # Remove any old virtual environment (if exists)
-Remove-Item -Recurse -Force .venv  # PowerShell command
+Remove-Item -Recurse -Force .venv
 
 # Create a new virtual environment with Python 3.11
 py -3.11 -m venv .venv
@@ -1067,7 +1070,7 @@ copy .env.example .env
 
 # Start the backend server
 python -m uvicorn app.main:app --reload --port 8000
-
+```
 Key backend env vars:
 
 | Variable | Required | Purpose |
@@ -1082,6 +1085,7 @@ Key backend env vars:
 | `LEONARDO_API_KEY` | For image generation | Leonardo API |
 
 \* At least one provider family is required (Groq or Gemini).
+
 
 ### Frontend
 
