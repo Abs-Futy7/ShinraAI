@@ -1042,14 +1042,31 @@ Source: `frontend/lib/api.ts`.
 
 ### Backend
 
-```bash
+> ⚠️ **Important:** Use **Python 3.11 (64-bit)**. Other versions (3.14 or newer) may cause package installation errors.
+
+```powershell
+# Navigate to backend folder
 cd backend
-python -m venv .venv
+
+# Remove any old virtual environment (if exists)
+Remove-Item -Recurse -Force .venv  # PowerShell command
+
+# Create a new virtual environment with Python 3.11
+py -3.11 -m venv .venv
+
+# Activate the virtual environment
 .venv\Scripts\Activate.ps1
+
+# Edit requirements.txt to remove this line if it exists:
+# aspose-html-net
+# Then install dependencies
 pip install -r requirements.txt
+
+# Copy environment variables template
 copy .env.example .env
-uvicorn app.main:app --reload --port 8000
-```
+
+# Start the backend server
+python -m uvicorn app.main:app --reload --port 8000
 
 Key backend env vars:
 
