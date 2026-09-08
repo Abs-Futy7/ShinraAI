@@ -7,6 +7,12 @@
 
 Shinrai is a multi-agent content ops pipeline that turns PRDs into source-grounded, publishable blogs—backed by claim validation, iterative fact-check rewrites, and full observability (logs, metrics, token/cost).
 
+## Demo
+
+[![Watch the ShinrAI demo: Turn requirements into stories](screenshots/shinrai-video-preview.jpg)](vid.mp4)
+
+**[Watch the 22-second demo](vid.mp4)** — Follow a PRD through research, writing, fact-check revisions, and cited blog output.
+
 ## Contents
 
 - [Overview](#overview)
